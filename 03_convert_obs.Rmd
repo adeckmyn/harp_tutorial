@@ -1,0 +1,43 @@
+---
+title: "Converting observations to sqlite"
+output: html_document
+---
+
+```{r setup03, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, collapse = TRUE, message = FALSE, warning = FALSE)
+```
+
+### Introduction
+Point observations also come in many formats. For Hirlam, that format is vobs. Currently this is the only point observations format that harp can deal with. vobs are pretty much the same format as vfld, with files for every observation time. This is considerable file IO if you want a season's worth of data, for example. Again in harp we use sqlite to store point observations, making it quick and easy to access exactly what you want. 
+
+### Converting observations to SQLite
+The harp function for converting observations is `read_obs_convert`. It works similarly to the `read_forecast` function, but has fewer arguments. In the data directory is a vobs directory containing the vobs files. We have hourly data here from 00 UTC 17 Feb 2019 to 23 UTC 20 Feb. Let's read them in:
+```{r}
+library(tidyverse)
+library(here)
+library(harpIO)
+
+read_obs_convert(
+  start_date  = 2019021700,
+  end_date    = 2019022023,
+  by          = "1h",
+  obs_path    = here("data/vobs"),
+  return_data = TRUE
+)
+```
+
+Your turn:
+
+* Write the observations to SQLite files in the directory data/OBSTABLE
+
+Solution
+```{r}
+read_obs_convert(
+  start_date  = 2019021700,
+  end_date    = 2019022023,
+  by          = "1h",
+  obs_path    = here("data/vobs"),
+  sqlite_path = here("data/OBSTABLE")
+)
+```
+

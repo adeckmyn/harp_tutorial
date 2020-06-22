@@ -1,0 +1,392 @@
+---
+title: "Working with point data - Part 1"
+output: html_document
+---
+
+```{r setup04, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, collapse = TRUE, message = FALSE, warning = FALSE)
+```
+
+### Introduction
+We now have all of our data prepared for harp and we aer ready to work with. That work includes undertsanding how harp data are structured, how to plot forecast data, how to manipulate the data, and verification.
+
+We'll be making use of all of the harp packages in this section, so we can just attach the full set of harp packages (and as always tidyverse and here)
+
+```{r}
+library(harp)
+library(tidyverse)
+library(here)
+```
+
+### Deterministic data
+Let's start with our deterministic data from the AROME Arctic model and member 0 of MEPS. First we load the data into our environment with the function `read_point_forecast`. As with other functions, we need to tell the function the start and end dates that we want, the names of the models, the parameter, the frequency of the forecasts, the path to the data and whether it is deterministic or ensemble data. 
+```{r}
+s10m <- read_point_forecast(
+  start_date = 2019021700,
+  end_date   = 2019021718,
+  fcst_model = c("AROME_Arctic_prod", "MEPS_prod"),
+  fcst_type  = "det",
+  parameter  = "S10m",
+  by         = "6h",
+  file_path  = here("data/FCTABLE/deterministic")
+)
+s10m
+```
+
+You will see that data are in two data frames in a list. This list is actually an object of class harp_fcst. Many of the functions in harp only work on harp_fcst objects. Many of the dplyr methods also work on harp_fcst objects. The forecast data are in the last column with the suffix "_det". 
+
+Let's take a look at some of the things you can do with harp_fcst objects. First `expand_data`
+```{r}
+expand_date(s10m, fcdate)
+expand_date(s10m, validdate)
+```
+
+With the year, month, day, hour and minute now available, it's easier to filter the data if you'd like. For example, if you just want the forecast wind speed at 15:00 UTC on 17 Feb 2019 for station ID 1010, which we is on Andøya, we could do something like
+```{r}
+expand_date(s10m, validdate) %>% 
+  filter(
+    SID         == 1010, 
+    valid_year  == 2019, 
+    valid_month == 2, 
+    valid_day   == 17, 
+    valid_hour  == 15
+  )
+```
+
+Equally, we could just get the data for one forecast
+```{r}
+expand_date(s10m, fcdate) %>% 
+  filter(
+    SID      == 1010,
+    fc_year  == 2019,
+    fc_month == 2,
+    fc_day   == 17,
+    fc_hour  == 12
+  ) %>% 
+  mutate(validdate = unix2datetime(validdate))
+```
+
+harp doesn't yet include any functions for plotting deterministic forecasts, but we can easily make the data into a single data frame using `bind_fcst`. 
+```{r}
+bind_rows(
+  AROME_Arctic_prod = rename(s10m$AROME_Arctic_prod, forecast = AROME_Arctic_prod_det),
+  MEPS_prod         = rename(s10m$MEPS_prod, forecast = MEPS_prod_det),
+  .id = "mname"
+)
+```
+
+You will also find in R directory a function, `bind_fcst` that does this binding for you - this function will be part of harp soon. 
+```{r}
+bind_fcst(s10m)
+```
+
+Your turn:
+
+* Plot the the forecast wind speed at REIPA for both AROME_Arctic_prod and MEPS_prod for each fcst_cycle as a function of validdate. [You can get the SID for REIPA from the built in list of stations which is in the variable station_list]
+
+Solution:
+```{r fig.width=9.5}
+reipa_sid <- filter(station_list, name == "REIPA") %>% 
+  pull(SID)
+bind_fcst(s10m) %>% 
+  filter(SID == reipa_sid) %>% 
+  mutate(validdate = unix2datetime(validdate)) %>% 
+  ggplot(aes(validdate, forecast, colour = fcst_cycle)) +
+    geom_line() +
+    facet_wrap(vars(mname), ncol = 1) +
+    scale_x_datetime(
+      breaks = lubridate::ymd_hm(seq_dates(2019021706, 2019021918, "12h"))
+    ) + 
+    labs(
+      x      = "Date-time",
+      y      = bquote("Wind speed [ms"^-1*"]"),
+      colour = "Forecast cycle",
+      title  = "Forecast Wind Speed at REIPA"
+    ) +
+    theme_bw() +
+    theme(legend.position = "bottom")
+
+bind_fcst(s10m) %>% 
+  filter(SID == reipa_sid) %>% 
+  mutate(validdate = unix2datetime(validdate)) %>% 
+  ggplot(aes(validdate, forecast, colour = mname)) +
+    geom_line() +
+    facet_wrap(vars(fcst_cycle), ncol = 1) +
+    scale_x_datetime(
+      breaks = lubridate::ymd_hm(seq_dates(2019021706, 2019021918, "12h"))
+    ) + 
+    labs(
+      x      = "Date-time",
+      y      = bquote("Wind speed [ms"^-1*"]"),
+      colour = "",
+      title  = "Forecast Wind Speed at REIPA"
+    ) +
+    theme_bw() +
+    theme(legend.position = "bottom")
+```
+
+Now let's read in some observations. To make sure we get the correct dates for the observations we can get the first and last validdates from the forecast. We could also extract the station IDs from the forecasts - which we can do with a little bit of "functional programming". 
+```{r}
+station_ids <- map(s10m, pull, SID) %>% 
+  reduce(union)
+obs <- read_point_obs(
+  start_date = first_validdate(s10m),
+  end_date   = last_validdate(s10m),
+  stations   = station_ids,
+  parameter  = "S10m",
+  obs_path   = here("data/OBSTABLE") 
+)
+```
+
+Now that we have the observations we can join them to our forecast data using the function `join_to_fcst`. This will take each of the data frames in our forecast list and perform an inner join with the observations - that means that only rows that are common to both data frames are kept. 
+```{r}
+s10m <- join_to_fcst(s10m, obs)
+```
+
+We have now added an observations column to each of the forecasts, so we could also include the observations in our plots.
+
+Your turn:
+
+* Add observations as a geom_point to your plots. [hint: you can map an aesthetic to an individual geom]
+
+Solution:
+```{r fig.width = 9.5}
+bind_fcst(s10m) %>% 
+  filter(SID == reipa_sid) %>% 
+  mutate(validdate = unix2datetime(validdate)) %>% 
+  ggplot(aes(validdate, forecast, colour = mname)) +
+    geom_line() +
+    geom_point(aes(y = S10m, shape = "Observation"), colour = "blue") +
+    scale_shape_manual(values = 21) +
+    facet_wrap(vars(fcst_cycle), ncol = 1) +
+    scale_x_datetime(
+      breaks = lubridate::ymd_hm(seq_dates(2019021706, 2019021918, "12h"))
+    ) + 
+    labs(
+      x      = "Date-time",
+      y      = bquote("Wind speed [ms"^-1*"]"),
+      colour = "",
+      title  = "Forecast Wind Speed at REIPA",
+      shape  = ""
+    ) +
+    theme_bw() +
+    theme(legend.position = "bottom")
+```
+
+#### Verifying deterministic forecasts
+
+Now that we have both forecasts and observations we can verify the forecasts. This is very simple in harp - we just run the function `det_verify` giving that data and telling it which column has the observations:
+```{r}
+det_verify(s10m, S10m)
+```
+
+You will see that the output is a list of two data frames - one fore summary scores and one for threshold scores. The threshold scores data frame contains only missing data as we didn't give the function any thresholds to verify for. However, that is easily done:
+```{r}
+verif_s10m <- det_verify(s10m, S10m, thresholds = seq(2.5, 12.5, 2.5))
+verif_s10m
+```
+
+As you can see, a very large number of scores are computed. harp has a function for plotting point verification scores, `plot_point_verif`. For summary scores, you just need to give it the verification data and tell it which score you'd like to plot, as well as tell the function that it is deterministic verification data. 
+```{r}
+plot_point_verif(verif_s10m, bias, verif_type = "det")
+```
+
+One thing you'll immediately notice is that the number of cases for MEPS_prod is much larger than for AROME_Arctic_prod. This means that in this verification we are not making a fair comparison - we should actually only be verifying the dates and locations that are common to both systems. harp provides the function `common_cases()` to do just that!
+```{r}
+common_cases(s10m)
+s10m <- common_cases(s10m)
+```
+
+You will see that now both AROME_Arctic_prod and MEPS_prod have the exact same number of rows in their data. Now if we run the verfication again and plot the same score we will see that both forecasting systems have the same number of cases. 
+```{r}
+verif_s10m <- det_verify(s10m, S10m, thresholds = seq(2.5, 12.5, 2.5))
+plot_point_verif(verif_s10m, bias, verif_type = "det")
+```
+
+Your turn:
+
+* Try plotting one of the threshold scores (frequency_bias, for example). Try to figure out wht the plot looks so weird
+
+Solution:
+```{r}
+plot_point_verif(verif_s10m, frequency_bias, verif_type = "det")
+```
+
+The plot looks weird becasue it's attempting to plot scores for all thresholds at the same time.
+
+When we have more than one threshold, we need to tell `plot_point_verif` what to do - there are 2 options - to facet or to filter, with the arguments `facet_by` or `filter_by`. These arguments work in pretty much the same way as `facet_wrap`. For example if we wanted the facet the scores by threshold, we would do 
+```{r}
+plot_point_verif(
+  verif_s10m, 
+  frequency_bias, 
+  verif_type = "det",
+  facet_by   = vars(threshold)
+) 
+```
+
+Or, if we just wanted the plot for a threshold of 7.5 ms^-1^, we would use `filter_by`
+```{r}
+plot_point_verif(
+  verif_s10m, 
+  frequency_bias, 
+  verif_type = "det",
+  filter_by  = vars(threshold == 7.5)
+) 
+```
+
+#### Verification by group
+The default behaviour of harp verification functions is to compute the verification metrics for each lead time. However, you can also compute the scores for any groups of data, much in the same way as `group_by` enables you to do. In this case groups are specified in the `groupings` argument to the verification function, and unlike `group_by` the column names you wish to use for grouping variables must be quoted (this may change in the future for consistency with `group_by`) and if there are more than one in a charcater vector. We could for example compute scores for each valid time:
+```{r}
+(verif_s10m <- det_verify(s10m, S10m, groupings = "validdate"))
+```
+
+To plot the score, we then need to tell plot_point_verif to use validdate as the x-axis (the default is lead time)
+```{r}
+plot_point_verif(verif_s10m, bias, x_axis = validdate)
+```
+
+If you want to change the date into a readable format, you can use the `mutate_list` function.
+```{r}
+plot_point_verif(
+  mutate_list(verif_s10m, date_time = unix2datetime(validdate)), 
+  bias, 
+  x_axis = date_time
+)
+```
+
+Your turn: 
+
+* Compute verification scores for stations with elevations $\geqslant 300 m$ and those $\lt 300 m$. for each lead time and thresholds of 2.5 - 12.5 ms^-1^ every 2.5 ms^-1^. To classify the station heights, you can use 
+
+```{r eval = FALSE}
+stations <- mutate(
+  station_list, 
+  station_height = cut(elev, breaks = c(-Inf, 300, Inf), labels = c("lt_300m", "ge_300m"))
+)
+s10m <- join_to_fcst(s10m, stations, force_join = TRUE)
+```
+
+* Plot the equitable threat score for each threshold and station height group. 
+
+Solutions
+
+* Compute verification scores for stations with elevations $\geqslant 300 m$ and those $\lt 300 m$. for each lead time and thresholds of 2.5 - 12.5 ms^-1^ every 2.5 ms^-1^. 
+```{r}
+stations <- mutate(
+  station_list, 
+  station_height = cut(elev, breaks = c(-Inf, 300, Inf), labels = c("> 300m", ">= 300m"))
+)
+(verif_s10m <- join_to_fcst(s10m, stations, force_join = TRUE) %>% 
+  det_verify(S10m, groupings = c("leadtime", "station_height"), thresholds = seq(2.5, 12.5, 2.5)))
+```
+
+* Plot the equitable threat score for each threshold and station height group.
+```{r fig.height = 8}
+plot_point_verif(
+  mutate_list(
+    verif_s10m,
+    threshold = paste("Wind speed >=", threshold, "m/s"),
+    station_height = paste("Station altitude", station_height)
+  ),
+  equitable_threat_score,
+  facet_by = vars(fct_inorder(threshold), station_height), 
+  num_facet_cols = 2
+)
+```
+
+Bearing in mind the `plot_point_verif` uses ggplot, you could also do the faceting yourself and have more control - for example, you coud use `facet_grid`
+```{r fig.height = 8}
+plot_point_verif(
+  mutate_list(
+    verif_s10m,
+    threshold = paste("S10m >=", threshold, "m/s"),
+    station_height = paste("Station altitude", station_height)
+  ),
+  equitable_threat_score
+) +
+  facet_grid(cols = vars(station_height), rows = vars(fct_inorder(threshold)))
+```
+
+#### Vertical profiles
+When we converted our data to sqlite, we also converted some upper air data for temperature and dew point temperature. To read in upper air data, we need to tell `read_point_forecast` and `read_point_obs` what the vertical coordinate is. 
+```{r}
+(t_upper <- read_point_forecast(
+  start_date          = 2019021700,
+  end_date            = 2019021718,
+  fcst_model          = c("AROME_Arctic_prod", "MEPS_prod"),
+  fcst_type           = "det",
+  parameter           = "T",
+  file_path           = here("data/FCTABLE/deterministic"),
+  vertical_coordinate = "pressure"
+))
+
+td_upper <- read_point_forecast(
+  start_date          = 2019021700,
+  end_date            = 2019021718,
+  fcst_model          = c("AROME_Arctic_prod", "MEPS_prod"),
+  fcst_type           = "det",
+  parameter           = "Td",
+  file_path           = here("data/FCTABLE/deterministic"),
+  vertical_coordinate = "pressure"
+)
+```
+
+harp has a function for plotting vertical profile, that allows you compare the profiles from different models - but only for the same parameter. 
+```{r}
+plot_vertical_profile(
+  t_upper, 
+  SID       = 22113, 
+  fcdate    = 2019021712,
+  lead_time = 24
+)
+```
+
+You can also plot the profiles on skew-t / log P grid by setting `skew_t = TRUE`. However, it should be noted that temperatures need to be in &deg;C rather than Kelvin. We can convert the units by using `scale_point_forecast`. 
+```{r}
+scale_point_forecast(t_upper, -273.15, new_units = "degC") %>% 
+  plot_vertical_profile(
+    SID       = 22113, 
+    fcdate    = 2019021712,
+    lead_time = 24,
+    skew_t    = TRUE
+  )
+```
+
+Your turn:
+
+* You can specify more than 1 station, date, and / or lead time in `plot_vertical_profile`. Experiment with making some multi panel plots. 
+* Can you figure out how you would add the dew point temperature to the plots?
+
+Solution
+
+* Experiment with making some multi panel plots.
+```{r fig.height=7}
+plot_vertical_profile(
+  t_upper, 
+  SID       = 22113, 
+  fcdate    = 2019021700,
+  lead_time = seq(0, 30, 6),
+  facet_by  = vars(leadtime)
+)
+```
+
+* Can you figure out how you would add the dew point temperature to the plots?
+```{r}
+plot_vertical_profile(
+  t_upper, 
+  SID       = 22113, 
+  fcdate    = 2019021712,
+  lead_time = 24
+) + 
+  geom_path(
+    data = filter(
+      bind_fcst(td_upper), 
+      SID      == 22113, 
+      fcdate   == str_datetime_to_unixtime(2019021712), 
+      leadtime == 24
+    ), 
+    aes(linetype = "Dew Point")
+  ) +
+  scale_linetype_manual("", values = 2)
+```
+

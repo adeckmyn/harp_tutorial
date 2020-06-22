@@ -1,0 +1,130 @@
+---
+title: "harp Tutorial"
+author: "Andrew Singleton"
+date: "`r Sys.Date()`"
+site: bookdown::bookdown_site
+output: bookdown::gitbook
+documentclass: book
+github-repo: andrew-MET/harpTutorial
+description: "This will form the harp tutorial / book."
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## System Requirements
+### R
+harp has been tested on Linux platforms with R versions going back to R 3.3.1. At the time of writing, the current version of R is R 4.0.1. See https://cran.r-project.org/ for details on how to download and install R. 
+
+### System libraries
+harp depends on some system libraries that may not be installed by default. We are working on identifying all of these, but the most common missing library is [PROJ](https://proj.org). On Ubuntu this can be installed with 
+
+```{bash, eval = FALSE}
+sudo apt-get update
+sudo apt-get install libproj-dev
+```
+
+If you do not have sudo rights, speak to your system administrator, or install proj in a location that is writable to you following the instructions at https://proj.org/install.html. Note that for guaranteed performance you should use version 4.9.3. 
+
+If you wish to use NetCDF files with harp you will also need to install libnetcdf-dev using apt-get install or the equivalent for your system. If you wish to use grib files you will need to install eccodes - for Ubuntu 18 and newer, this is available via apt-get install libeccodes-dev, otherwise see https://confluence.ecmwf.int/display/ECC.
+
+### RStudio
+RStudio is an IDE for R that makes working in R much easier. It is recommended that you work with RStudio for harp, though it is possible to work in a terminal and use any editor for writing scripts. Go to https://rstudio.com/products/rstudio/ to download RStudio.
+
+## Installation
+harp is stored on Github, which makes installation within R straightforward. There are a number of dependencies that need to be downloaded and compiled, so if you have a new R installation the process can take some time. First you need to start R, or RStudio and install the `"remotes"` package using `install.packages`. 
+
+If you are concerned about updating R packages that you use for other projects then skip the rest of this section and go to the section on [Isolating harp]. 
+
+```{r install_remotes, eval = FALSE}
+install.packages("remotes")
+```
+
+Then we can use the remotes package to install harp from Github:
+```{r install_harp, eval = FALSE}
+remotes::install_github("andrew-MET/harp")
+```
+
+Note that "andrew-MET" is a development location for harp, and the recommended place to download from will soon change. 
+If you encounter problems with system libraries, the missing libraries will make themselves known at this stage. If you have system libraries installed in non-standard locations, you can specify those locations using the `configure.args` argument in combination with the R package that needs the system library. For example, if you have PROJ, which is required by the `meteogrid` package, installed in a non-standard location, you would do the following:
+```{r install_harp_conf, eval = FALSE}
+remotes::install_github(
+  "andrew-MET/harp",
+  configure.args = c(
+    meteogrid = "--with-proj=/path/to/proj"
+  )
+)
+```
+
+where `/path/to/proj` is the full path to your PROJ installation. 
+
+## Setting up a project
+To follow the tutorial, you will need to download the data. These data are found in the harpData package, which can also be installed from Github:
+```{r install_harpData, eval = FALSE}
+remotes::install_github("andrew-MET/harpData")
+```
+
+For the tutorial you should set up a project in clean directory. There are slightly different approaches depending on whether you're using [RStudio] or R [from the terminal]
+
+### RStudio
+Click on:
+|   File > New Project
+Select:
+|   - New Directory
+|   - New Project
+Choose a directory name (e.g. harp_tutorial)
+Browse to a directory under which your project should reside
+Click on:
+|     Create Project
+
+### From the terminal 
+Open R and do the following:
+```{r new_project, eval = FALSE}
+project_dir <- "/path/to/harp_tutorial"
+dir.create(project_dir, recursive = TRUE)
+setwd(project_dir)
+```
+
+Alternatively, you can create the directory outside of R and start R from that directory.
+
+### Linking to the data
+We will use the `here` package to set the base directory of our project. This means that whatever directory we are currently in within the project, we can set relative paths to any files and directories in the project. We also make use of the tidyverse for some data manipulation functions.
+```{r install_here, eval = FALSE}
+install.packages("here")
+install.packages("tidyverse")
+```
+
+```{r here, collapse = TRUE}
+library(here)
+```
+
+Now will create a data directory and link the contents of the harpData package to the data directory. We will do this by making a vector of the directories we want and loop over the vector and create the directories. Don't worry too much about the syntax at this stage. 
+```{r link_data, eval = FALSE}
+dir.create(here("data"))
+for (data_dir in c("grib", "netcdf", "vfld", "vobs")) {
+  file.symlink(from = system.file(data_dir, package = "harpData"), to = here("data"))
+}
+```
+
+You are now ready to start the first tutorial!
+
+## Learning R
+It is not the purpose of this tutorial to teach R, but rather to teach the usage of harp in R. While it is not necessary to know R to learn how to use harp, a basic understanding of the language would be useful. One of the best resources for getting started with R is the book "R for Data Science" by Hadley Wickham, which is available for free online at https://r4ds.had.co.nz/. This book makes use of what is known as the "tidyverse" in R, and harp follows many of the same principles so the book is an extremely useful learning resource for harp.
+
+## Isolating harp
+If you use R for other projects that are sensitive to package versions, and thus don't want to risk updating those packages when you install harp, you can install harp as a project with its own package repository. This is done using the renv package. 
+
+In RStudio this is straightforward - when you create the project, tick the box labeled "Use renv with this project" (for older versions of RStudio this will be "Use Packrat with this project") before clicking on the final "Create Project" button.
+
+If you are using R from the terminal, before installing harp create the project directory as described in R [from the terminal] and navigate to it using `setwd`. Then use renv to create the isolated environment:
+```{r harp_renv, eval = FALSE}
+install.packages("renv")
+renv::init()
+renv::install("andrew-MET/harp")
+renv::install("tidyverse")
+renv::install("here")
+renv::snapshot()
+```
+
+You will need to do this for every harp based project, but it will ensure that you do not overwrite any version sensitive packages. 

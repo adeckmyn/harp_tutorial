@@ -1,0 +1,530 @@
+---
+title: "Working with point data - Part 2"
+output: html_document
+---
+
+```{r setup05, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, collapse = TRUE, message = FALSE, warning = FALSE)
+```
+
+### Introduction
+
+Now we have seen harp in action with deterministic data, let's move on to ensemble data. harp's origins are in verification of ensemble data, so the functionality here is a little more mature. Many of the same functions that were introduced in the deterministic section can be used for ensemble data as well. There are also functions that currently only work with ensemble data and are in the process of being upgraded to handle deterministic forecasts as well. 
+
+### Reading in ensemble data
+We can use the same `read_point_forecast` function to read in ensemble data - we just need to tell it that we are reading ensemble data by setting `fcst_type = "eps"`. 
+```{r}
+library(tidyverse)
+library(here)
+library(harp)
+(t2m <- read_point_forecast(
+  start_date    = 2019021700,
+  end_date      = 2019021718,
+  fcst_model    = "MEPS_prod",
+  fcst_type     = "EPS",
+  parameter     = "T2m",
+  lead_time     = seq(0, 12, 3),
+  by            = "6h",
+  file_path     = here("data/FCTABLE/ensemble"),
+  file_template = "fctable_eps_all_leads"
+))
+```
+
+You will see that each ensemble member gets its own column in the data frame. This isn't really tidy data - for the data to be tidy, the ensemble member would be a variable as well. However, when ensembles become large the slightly untidy format is advantageous - firstly, many of the verification functions we use expect the ensemble data as a matrix and continual pivoting slows these function down a lot and secondly, this format takes up less space in memory. We can, however, convert the data to a tidy format with the function `gather_members()`
+
+```{r}
+gather_members(t2m)
+```
+
+With the members gathered together we can use `bind_fcst` in order to make basic plots from the data using ggplot. 
+```{r}
+bind_fcst(t2m) %>% 
+  filter(SID == 1492, fcdate == str_datetime_to_unixtime(2019021712)) %>% 
+  ggplot(aes(x = unix2datetime(validdate), y = forecast, colour = member)) + 
+  geom_line()
+
+bind_fcst(t2m) %>% 
+  mutate(leadtime = fct_inorder(paste0("Lead time: ", leadtime, "h"))) %>% 
+  ggplot(aes(forecast, colour = leadtime, fill = leadtime)) +
+    geom_density(alpha = 0.5) + 
+    facet_wrap(vars(leadtime)) +
+    theme(legend.position = "none")
+```
+
+
+There are also a number of different ways you can plot time series of ensemble forecasts for a station. This can be done with the function `plot_station_eps`. You give it the harp_fcst object and tell it what station and forecast start time you want the plot for, and optionally what sort of plot you want.
+```{r}
+plot_station_eps(t2m, 1492, 2019021700)
+plot_station_eps(t2m, 1492, 2019021700, type = "boxplot")
+plot_station_eps(t2m, 1492, 2019021700, type = "spaghetti")
+plot_station_eps(t2m, 1492, 2019021700, type = "ridge")
+```
+
+There are other types of plot that are more suited to truncated distributions such as those that are bound at 0 for wind speed and precipitation. When we converted the precipitation data to SQLite, we do not take any accout of accumulation times - the data are as they are output from in the model as accumulation since the model start time. We can do the accumulation when we read in the data using `read_point_forecast` by prefixing the parameter name with "Acc" for accumulated and suffixing it with the accumulation time in hours, e.g. "6h". 
+
+Your turn:
+
+* Read in 3h accumulated precipitatino from MEPS. Use `show_harp_parameters()` if you need some guidance.
+* Find the time and station with the heighest forecast precipitation, and which forecast it s for.
+
+Solution:
+
+* Read in 3h accumulated precipitatino from MEPS. Use `show_harp_parameters()` if you need some guidance.
+```{r}
+(precip_3h <- read_point_forecast(
+  start_date    = 2019021700,
+  end_date      = 2019021718,
+  fcst_model    = "MEPS_prod",
+  fcst_type     = "EPS",
+  parameter     = "AccPcp3h",
+  lead_time     = seq(0, 12, 3),
+  by            = "6h",
+  file_path     = here("data/FCTABLE/ensemble"),
+  file_template = "fctable_eps_all_leads"
+))
+```
+
+* Find the time and station with the heighest forecast precipitation
+```{r}
+bind_fcst(precip_3h) %>% 
+  group_by(SID, fcdate, validdate) %>% 
+  summarise(max_precip = max(forecast)) %>% 
+  arrange(desc(max_precip)) %>% 
+  ungroup() %>% 
+  mutate(fcdate = unix2datetime(fcdate), validdate = unix2datetime(validdate))
+```
+
+Let's plot a time series for that forecast. 
+```{r}
+plot_station_eps(precip_3h, 1106, 2019021706, type = "boxplot") + scale_x_continuous(breaks = seq(0, 12, 3))
+plot_station_eps(precip_3h, 1106, 2019021706, type = "stacked_prob") + scale_x_continuous(breaks = seq(0, 12, 3))
+```
+
+
+Your turn:
+
+* Observations are read in the same way as we did for deterministic forecasts. Read in the observations for 2m temperature and 3h accumulated precipitation and join to the forecasts.
+```{r}
+(t2m <- join_to_fcst(
+  t2m, 
+  read_point_obs(
+    first_validdate(t2m),
+    last_validdate(t2m),
+    parameter = "T2m",
+    obs_path = here("data/OBSTABLE")
+  )
+))
+(precip_3h <- join_to_fcst(
+  precip_3h, 
+  read_point_obs(
+    first_validdate(precip_3h),
+    last_validdate(precip_3h),
+    parameter = "AccPcp3h",
+    obs_path = here("data/OBSTABLE")
+  )
+))
+```
+
+
+We can now add the observations to our plots
+```{r}
+plot_station_eps(t2m, 1492, 2019021700, obs_column = T2m, colour = "red", shape = 21)
+```
+
+Note this function still needs more work, and doesn't work well in all cases!
+
+We can also make scatter plots of how forecasts compare with observations. They are made with hexbin plots and it is posisible to compare the whole ensemble with the observations or each ensemble member. The function is `plot_scatter` .
+```{r}
+plot_scatter(t2m, "MEPS_prod", T2m)
+```
+
+
+Your turn: 
+ 
+* Can you work out how to combine all members inta a single scatter plot. Check the help and note that the explanations are not complete!
+* Make a scatter plots for each member for observed 3h precipitation > 0.25 mm. 
+
+Solutions:
+
+* Can you work out how to combine all members inta a single scatter plot. Check the help and note that the explanations are not complete!
+```{r}
+plot_scatter(t2m, "MEPS_prod", T2m, facet_members = FALSE)
+```
+
+* Make a scatter plots for each member for observed 3h precipitation > 0.25 mm. 
+```{r}
+plot_scatter(filter(precip_3h, AccPcp3h > 0.25), "MEPS_prod", AccPcp3h)
+```
+
+#### Multi model ensembles
+When we generated SQLite FCTABLE files for a fake multimodel ensemble we needed to specify a lot of details about the ensemble, such as the names and member numbers for each sub model. When we read those data in from the FCTABLE files, that information is already there. So, let's read in our multi model ensemble and see what we get. 
+```{r}
+read_point_forecast(
+  start_date    = 2019021700,
+  end_date      = 2019021718,
+  fcst_model    = "awesome_multimodel_eps",
+  fcst_type     = "EPS",
+  parameter     = "T2m",
+  lead_time     = seq(0, 12, 3),
+  by            = "6h",
+  file_path     = here("data/FCTABLE/ensemble"),
+  file_template = "fctable_eps_all_leads"
+)
+```
+
+As you can see we get the two sub models - AROME_Arctic_prod with one member, and MEPS_prod with 3 members - but not the full ensemble. However, we can create the full ensemble with the function `merge_multimodel`. 
+```{r}
+(t2m_mm <- read_point_forecast(
+  start_date    = 2019021700,
+  end_date      = 2019021718,
+  fcst_model    = "awesome_multimodel_eps",
+  fcst_type     = "EPS",
+  parameter     = "T2m",
+  lead_time     = seq(0, 12, 3),
+  by            = "6h",
+  file_path     = here("data/FCTABLE/ensemble"),
+  file_template = "fctable_eps_all_leads"
+) %>% 
+  merge_multimodel())
+```
+
+Now we have the full multimodel ensemble and the two sub models, all as separate models in the harp_fcst object. You can, if you prefer, discard the sub models by setting `keep_sub_models = FALSE` in `merge_multimodel`. 
+
+Now we have two harp_fcst objects for 2m temperature, t2m and t2m_mm. We can easily combine them into a single harp_fcst using the standard concatenate function, `c`
+```{r}
+c(t2m, t2m_mm)
+```
+
+#### Lagged ensembles
+Reading lagged ensembles from FCTABLE files is also easier than in the conversion to SQLite step. Since FCTABLE files were saved for each forecast cycle, and the members for that cycle in the file, all we need to do is tell read_point_forecast the appropriate lags. Here we need to be a bit careful about what we're doing, especially if we are reading in data from other models at the same. In the case of CMEPS there is a new set of ensemble members every three hours, but if we want to compare it with MEPS, which has a full set of members every six hours, which should set the `by = "6h"` and use our lags specification to ensure we read in the correct amount of data for CMEPS, by ensuring there are lags from zero to five hours. This probably becomes clearer with an example... 
+```{r}
+(t2m <- read_point_forecast(
+  start_date    = 2019021700,
+  end_date      = 2019021718,
+  fcst_model    = c("CMEPS_prod", "MEPS_prod"),
+  fcst_type     = "EPS",
+  parameter     = "T2m",
+  lead_time     = seq(0, 12, 3),
+  by            = "6h",
+  lags          = list(
+    CMEPS_prod = paste0(seq(0, 5), "h"),
+    MEPS_prod  = "0h"
+  ),
+  file_path     = here("data/FCTABLE/ensemble"),
+  file_template = "fctable_eps_all_leads",
+  merge_lags    = FALSE 
+))
+```
+
+There was a warning about missing files. This is because we didn't generate any FCTABLE files for the 21 cycle on the 16 Feb 2019 and they were also not uploaded to this project! However, this illustrates that when lagging is used, you have to be very clear in your mind exactly what you need to get the lagged ensemble you want. 
+
+You will also see that there a are lot of missing data - this is immediately apparent for members 5 and 6. This is becasuse, since we set merge_lags = FALSE, we have only read in lagged data, but haven't created the lagged ensemble yet. We create the lagged ensemble with the function `lag_forecast`. We tell the function which cycles you want to be the "parent" cycles and the function will shift all of the members between the parent cycles to the parent cycle. By default, children are found by looking backwards in time, as would happen in an operational setting - for example, if the parent cycles are 0, 6, 12 and 18, the child cycles for the parent at 6 are at 5, 4, 3, 2, and 1, and so on for the other parents. You can look for children in the other direction by setting `direction = -1`. Note that when merge_lags = TRUE, the ensemble is created with the parent cycles set to be those generated from the start_date, end_date and by arguments. 
+```{r}
+lag_forecast(
+  t2m, 
+  fcst_model = "CMEPS_prod", 
+  parent_cycles = seq(0, 18, 3)
+)
+```
+
+Your turn:
+
+* Use `pull(.fcst, fcst_cycle) %>% map(unique) %>% map(sort)` to see which cycles you are left with when you try different `parent_cycles` and `direction = 1` or `direction = -1`. Try to remember what we actually did when we ran `read_eps_interpolate` for CMEPS
+* Combine 2m temperature forecasts for the multimodel ensemble (including sub models), MEPS_prod and CMEPS(with parent_cycles of 6, 12 and 18) and select the common cases and join the observations (note you will have to run `set_units(t2m_mm, "K")` due to a bug in `read_point_forecast` that drops that units column for multi model ensembles)
+
+Solutions
+
+* Use `pull(.fcst, fcst_cycle) %>% map(unique) %>% map(sort)` to see which cycles you are left with when you try different `parent_cycles` and `direction = 1` or `direction = -1`.
+```{r}
+pull(t2m, fcst_cycle) %>% map(unique) %>% map(sort)
+pull(lag_forecast(t2m, "CMEPS_prod", seq(0, 18, 6)), fcst_cycle) %>% map(unique) %>% map(sort)
+pull(lag_forecast(t2m, "CMEPS_prod", seq(0, 18, 3)), fcst_cycle) %>% map(unique) %>% map(sort)
+pull(lag_forecast(t2m, "CMEPS_prod", seq(0, 18, 6), direction = -1), fcst_cycle) %>% map(unique) %>% map(sort)
+pull(lag_forecast(t2m, "CMEPS_prod", seq(0, 18, 3), direction = -1), fcst_cycle) %>% map(unique) %>% map(sort)
+```
+
+* Combine 2m temperature forecasts for the multimodel ensemble (including sub models), MEPS_prod and CMEPS(with parent_cycles of 0, 6, 12 and 18) and select the common cases
+```{r}
+(t2m <- c(set_units(t2m_mm, "K"), lag_forecast(t2m, "CMEPS_prod", seq(0, 18, 6))) %>% 
+    common_cases() %>% 
+    join_to_fcst(
+      read_point_obs(
+        first_validdate(.),
+        last_validdate(.),
+        parameter = "T2m",
+        obs_path  = here("data/OBSTABLE") 
+      )
+    )
+)
+```
+
+Now we can try plotting the ensmeble temperature evolution for REIPA again 
+```{r}
+plot_station_eps(
+  t2m, 
+  1114, 
+  2019021706, 
+  obs_column = T2m, 
+  colour = "red", 
+  shape = 21
+) + 
+  scale_x_continuous(breaks = seq(0, 9, 3))
+```
+
+There are still a few problems with `plot_station_eps` so tread carefully!
+
+#### Shifted forecasts
+Lets's say you want to compare an ensmeble with another but with the time shifted. i.e. how does a forecast that is 6 hours old compare with the current forecast. We can do that by shifting the forecast - that means adjusting the forecast start time and the forecast lead time by 6 hours so the forecast appears to have been run at a different time. We can do this with `shift_forecast`. 
+
+To illustrate, we read in the MEPS_prod data, for 10m wind speed, just to be different!
+```{r}
+s10m <- read_point_forecast(
+  start_date    = 2019021700,
+  end_date      = 2019021718,
+  fcst_model    = "MEPS_prod", 
+  fcst_type     = "EPS",
+  parameter     = "S10m",
+  lead_time     = seq(0, 12, 3),
+  file_path     = here("data/FCTABLE/ensemble"),
+  file_template = "fctable_eps_all_leads"
+)
+```
+
+And then we are going to create a new ensemble with MEPS_prod shifted by 6 hours, so the forecast that started at 00 UTC now appears to have started at 06 UTC etc. This means that the forecast with a lead time of 6 hours, that used to start at 00 UTC now appears to have started at 06 UTC and has a lead time of 0 hours. 
+```{r}
+(s10m <- shift_forecast(
+  s10m,
+  fcst_shifts    = list(MEPS_prod = 6),
+  keep_unshifted = TRUE
+))
+```
+
+So now we have two ensembles in our data: MEPS_prod and MEPS_prod_shifted_6h. We can see that they are different by getting the start times (fcdate) and lead times from each of the forecasts. 
+```{r}
+transmute(s10m, fcdate = unix2datetime(fcdate), leadtime) %>% map(distinct)
+```
+
+We're going to want to verify s10m later, so let's make sure we have the common cases and get the observations
+```{r}
+s10m <- common_cases(s10m) %>% 
+  join_to_fcst(
+    read_point_obs(
+      first_validdate(s10m),
+      last_validdate(s10m),
+      parameter = "S10m",
+      obs_path  = here("data/OBSTABLE") 
+    )
+  )
+```
+
+### Verification
+For ensemble verification, the main verification function is `ens_verify`. Similar to `det_verify`, you give it the data and the column name of the observations. 
+```{r}
+ens_verify(t2m, T2m)
+```
+
+By default, summary deterministic verification scores will be computed for each member. We can also compute categorical ensemble scores based on thresholds (such as Brier Score, ROC, economic value etc.) if we pass some thresholds to the function
+```{r}
+verif_s10m <- ens_verify(s10m, S10m, thresholds = c(1, 2, 5, 8))
+```
+
+You can also compute "fair" scores for CRPS and Brier Score, which take account differences in the number of members between ensembles by scaling them to an equal number of members. We do this by passing `num_ref_members`.
+```{r}
+verif_t2m <- ens_verify(
+  t2m, 
+  T2m, 
+  thresholds      = seq(262, 272, 2), 
+  num_ref_members = 10
+)
+```
+
+So now we can have a quick look at some score plots using `plot_point_verif` - the default for the type of verification is `verif_type = "ens"` so we don't need to specify it (for now)
+```{r}
+plot_point_verif(verif_s10m, crps)
+plot_point_verif(verif_s10m, spread_skill)
+plot_point_verif(verif_s10m, rank_histogram)
+
+plot_point_verif(verif_t2m, spread_skill_ratio)
+plot_point_verif(verif_t2m, fair_crps)
+plot_point_verif(
+  verif_t2m, 
+  rank_histogram, 
+  facet_by        = vars(leadtime), 
+  num_facet_cols  = 2, 
+  num_legend_rows = 2
+) +
+  theme(axis.text.x = element_text(angle = 90))
+plot_point_verif(verif_t2m, brier_score, facet_by = vars(threshold))
+```
+
+We can also set the colours / fill colours for our plots by passing a data frame with one column as mname and the other as colour. The easiest way to get the model names for the mname is either from the forecast object using names, or if that is not available at the time you can get if from the verification list. 
+```{r}
+names(t2m)
+map(verif_t2m, pull, mname) %>% reduce(union)
+my_colours <- tibble(
+  mname = names(t2m),
+  colour = c("darkblue", "blue", "skyblue", "red", "green")
+)
+```
+
+We can also plot the deterministic scores for each member. Here we need to tell `plot_point_verif` to do faceting by mname and to colour the lines according to the ensemble member. 
+```{r}
+plot_point_verif(
+  verif_t2m, 
+  mae, 
+  verif_type      = "det", 
+  facet_by        = vars(mname), 
+  colour_by       = member,
+  legend_position = "right", 
+  num_legend_rows = 20
+)
+```
+
+We've got quite a lot going on there and it's not a useful for plot, put we can clean it up by adding some more grouping variables. First let's differentiate between the control members and the perturbed members. 
+```{r}
+verif_t2m$det_summary_scores <- mutate(
+  verif_t2m$det_summary_scores,
+  member_type = case_when(
+    grepl("000", member) ~ "control",
+    TRUE                 ~ "perturbed"
+  )
+)
+
+member_colours <- tribble(
+  ~member_type, ~colour,
+  "control", "red", 
+  "perturbed", "grey70"
+)
+
+plot_point_verif(
+  verif_t2m, 
+  mae, 
+  verif_type      = "det", 
+  facet_by        = vars(mname), 
+  colour_by       = member_type,
+  colour_table    = member_colours, 
+  legend_position = "right", 
+  num_legend_rows = 2,
+  group           = member
+)
+```
+
+And then we're going to add an extra column to the data frame so that we can give lagged members a different line type
+```{r}
+verif_t2m$det_summary_scores <- mutate(
+  verif_t2m$det_summary_scores,
+  lagging = case_when(
+    grepl("_lag$", member) ~ "lagged",
+    TRUE                   ~ "unlagged"
+  )
+)
+plot_point_verif(
+  verif_t2m , 
+  mae, 
+  verif_type      = "det", 
+  facet_by        = vars(mname), 
+  colour_by       = member_type,
+  colour_table    = member_colours, 
+  linetype_by     = fct_rev(lagging), 
+  legend_position = "right", 
+  num_legend_rows = 2,
+  group           = member
+)
+```
+
+And finally, although our multi model ensemble plot looks strange, because it has 2 member 0s, that's OK because we don't need it as the data are in the plots for the sub models.
+```{r}
+plot_point_verif(
+  verif_t2m , 
+  mae, 
+  verif_type      = "det", 
+  facet_by        = vars(mname), 
+  colour_by       = member_type,
+  colour_table    = member_colours, 
+  linetype_by     = fct_rev(lagging), 
+  legend_position = "right", 
+  num_legend_rows = 2,
+  group           = member,
+  filter_by       = vars(mname != "awesome_multimodel_eps"),
+  num_facet_cols  = 2 
+) +
+  scale_x_continuous(breaks = seq(0, 9, 3))
+```
+
+#### Verification by groups
+As we mentioned in the deterministic section, we can compute verification scores for groups of data. So in our data we have forecasts from 3 different cycles: 06, 12, and 18 UTC. (Let's forget for a moment that also means only 3 forecasts and assume that the data include forecasts from several days running with the same start times every day). We can use the `groupings` argument to say that we want to verify for each lead time for each forecast cycle. 
+```{r}
+ens_verify(t2m, T2m, groupings = c("leadtime", "fcst_cycle"))
+```
+
+But this only computes the scores for each forecast cycle and not for all of the cycles combined. We can rectify that by passing the groupings as a list with different grouping combinations
+```{r}
+verif_t2m <- ens_verify(
+  t2m, 
+  T2m, 
+  groupings  = list("leadtime", c("leadtime", "fcst_cycle")),
+  thresholds = seq(262, 272, 2)
+)
+```
+
+If we pull out the fcst_cycle column, we will see that we now have a new entry for all cycles. 
+```{r}
+pull(verif_t2m$ens_summary_scores, fcst_cycle) %>% unique()
+```
+
+So we can plot for all forecast cycles
+```{r fig.height=8, fig.width=9}
+plot_point_verif(
+  verif_t2m, 
+  brier_score_decomposition, 
+  facet_by = vars(fcst_cycle, threshold),
+  num_facet_cols = 6
+)
+```
+
+If we've computed some different verifications and we want to plot them together, we can join those score objects using `bind_point_verif`. We have done verification for 2m temperature and 10m wind speed, so we can bind those together. 
+```{r}
+verif_s10m <- ens_verify(
+  s10m, 
+  S10m, 
+  thresholds = c(1, 2, 5, 8),
+  groupings  = list("leadtime", c("leadtime", "fcst_cycle"))
+)
+verif_all <- bind_point_verif(verif_t2m, verif_s10m)
+```
+
+And then we can plot those together with the same function
+```{r fig.height=8}
+plot_point_verif(
+  verif_all, 
+  crps, 
+  facet_by       = vars(parameter, fcst_cycle),
+  num_facet_cols = 4
+)
+```
+
+#### Saving the verification data
+You can save your verification data with the function `save_point_verif`. You simply give it the data and the directory you want to save in. The filenames are generated from the data, so although you can provide a template, it is best not to. 
+```{r}
+save_point_verif(verif_t2m, verif_path = here("data/verification"))
+save_point_verif(verif_s10m, verif_path = here("data/verification"))
+```
+
+Once the data are saved you can use a browser based app to view and interact with the data. This app is created in the R package `shiny`, so to launch it you run the function `shiny_plot_point_verif` and give it the starting directory to look for data.
+```{r eval=FALSE}
+shiny_plot_point_verif(here("data/verification"))
+```
+
+TO BE ADDED
+-----------
+
+* vertical profiles
+* verification of vertical profiles
+* plot vertical verification
+* jitter forecast
+* conditional verification
+* joint probabilities (maybe)
+* bootstrapping
+* pooled bootstrapping
+
+

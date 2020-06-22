@@ -1,0 +1,183 @@
+---
+title: "Interpolating model outputs - EPS"
+output: html_document
+---
+  
+```{r setup02, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, collapse = TRUE, message = FALSE, warning = FALSE)
+```
+
+### Introduction
+The interpolation of EPS model data works in much the same way as for deterministic model data, using the `read_forecast` function. By adding the members argument, we tell `read_forecast` that we are reading ensemble data. 
+
+
+### Read and interpolate 2m temperature
+As mentioned in the deterministic section, there are vfld files for MEPS in the data directory. There are 10 members numbered from 0 to 9, but we only have up to a lead time of 12 hours. As for the deterministic model, let's first get the 2m temperature
+```{r message=FALSE, warning=FALSE}
+library(tidyverse)
+library(here)
+library(harpIO)
+
+read_forecast(
+  start_date    = 2019021700,           
+  end_date      = 2019021718,           
+  fcst_model    = c("MEPS_prod"),  
+  parameter     = "T2m",                
+  lead_time     = seq(0, 12, 3), 
+  members       = seq(0, 9), 
+  by            = "6h",                
+  file_path     = here("data/vfld"),    
+  file_template = "vfld_eps",
+  return_data   = TRUE                  
+)
+```
+
+You will see that there are a few extra columns in the data. There is both fcst_model and sub_model. This is in case we are dealing with a multi model ensemble. There is also a column for member, and members_out. This is if you want to renumber the members for the sqlite files. Finally there is a lag column. This has information for lagged ensembles. 
+
+Let's now try reading two models - the AROME_Arctic_prod deterministic model and the MEPS_prod ensemble. But how do we specify the members for more than one model? In this case we use a named list, with one element of the list for each model - and we can do the same for the file template. By setting the members to NA for AROME_Arctic_prod we tell read_forecast that it is deterministic - you could also set it to a numeric value and it would treat the AROME_Arctic_prod as a single member ensemble. We'll just take the first 3 members from MEPS_prod for speed. 
+```{r}
+read_forecast(
+  start_date    = 2019021700,           
+  end_date      = 2019021718,           
+  fcst_model    = c("MEPS_prod", "AROME_Arctic_prod"),  
+  parameter     = "T2m",                
+  lead_time     = seq(0, 12, 3), 
+  members       = list(MEPS_prod = seq(0, 2), AROME_Arctic_prod = NA), 
+  by            = "6h",                
+  file_path     = here("data/vfld"),    
+  file_template = list(MEPS_prod = "vfld_eps", AROME_Arctic_prod = "vfld"),
+  return_data   = TRUE                  
+)
+```
+
+We could also generate a multimodel ensemble. Here we use a named nested list for members and a named list for fcst_model. Note also that we have to set custom template for AROME_Arctic_prod since for multimodel ensembles to work, {sub_model} needs to be a part of the file template. 
+```{r}
+read_forecast(
+  start_date        = 2019021700,           
+  end_date          = 2019021718,           
+  fcst_model        = list(awesome_multimodel_eps = c("MEPS_prod", "AROME_Arctic_prod")),  
+  parameter         = "T2m",                
+  lead_time         = seq(0, 12, 3), 
+  members           = list(awesome_multimodel_eps = list(MEPS_prod = seq(0, 2), AROME_Arctic_prod = 0)), 
+  by                = "6h",                
+  file_path         = here("data/vfld"),    
+  file_template     = list(
+    awesome_mutlimodel_eps = list(
+      MEPS_prod         = "vfld_multimodel", 
+      AROME_Arctic_prod = "{sub_model}/vfld{sub_model}{YYYY}{MM}{DD}{HH}{LDT2}"
+    )
+  ),
+  return_data       = TRUE, 
+)
+```
+
+You will see that the members are named differently for each of the models in the ensemble. You can also use the `split_multimodel` function to separate out each of the sub models into their own data frames in the harp_fcst list. 
+
+Your turn:
+
+* Create sqlite files for all members of MEPS_prod for lead times 0, 3, 6, 9 and 12 for 2m temperature (both corrected and uncorrected), 10m wind speed and temperature and dew point temperature for the upper air.
+* Make a multimodel ensemble with members 0-5 of MEPS_prod and AROME_Arctic_prod as a single member ensemble and write out the output to sqlite files for the same lead times and parameters as above. Note that to ensure unique rows in the sqlite files we cannot write out the model elevation. See `?sqlite_opts` for how to control this behaviour.
+
+Solutions
+
+* Create sqlite files for all members of MEPS_prod for lead times 0, 3, 6, 9 and 12 for 2m temperature (both corrected and uncorrected), 10m wind speed and temperature and dew point temperature for the upper air.
+```{r}
+read_forecast(
+  start_date          = 2019021700,           
+  end_date            = 2019021718,           
+  fcst_model          = "MEPS_prod",  
+  parameter           = c("T2m", "S10m", "T", "Td"),                
+  lead_time           = seq(0, 12, 3), 
+  members             = seq(0, 9), 
+  by                  = "6h",                
+  file_path           = here("data/vfld"),    
+  file_template       = "vfld_eps",
+  transformation_opts = interpolate_opts(keep_model_t2m = TRUE),
+  output_file_opts    = sqlite_opts(path = here("data/FCTABLE/ensemble"))
+)
+```
+
+* Make a multimodel ensemble with members 0-5 of MEPS_prod and AROME_Arctic_prod and write out the output to sqlite files for the same lead times and parameters as above.
+```{r}
+read_forecast(
+  start_date        = 2019021700,           
+  end_date          = 2019021718,           
+  fcst_model        = list(awesome_multimodel_eps = c("MEPS_prod", "AROME_Arctic_prod")),  
+  parameter         = c("T2m", "S10m", "T", "Td"),                
+  lead_time         = seq(0, 12, 3), 
+  members           = list(awesome_multimodel_eps = list(MEPS_prod = seq(0, 2), AROME_Arctic_prod = 0)), 
+  by                = "6h",                
+  file_path         = here("data/vfld"),    
+  file_template     = list(
+    awesome_multimodel_eps = list(
+      MEPS_prod         = "vfld_multimodel",
+      AROME_Arctic_prod = "{sub_model}/vfld{sub_model}{YYYY}{MM}{DD}{HH}{LDT2}"
+    )
+  ),
+  transformation_opts = interpolate_opts(keep_model_t2m = TRUE),
+  output_file_opts    = sqlite_opts(path = here("data/FCTABLE/ensemble"), remove_model_elev = TRUE)
+)
+```
+
+
+### Lagged ensembles
+In a number of Hirlam institutes (MetCoOp and DMI) "continuous" ensembles are being run. With these a small number of members are run each hour and the full ensemble is constructed by lagging these hourly members. In MetCoOp this ensemble is known as CMEPS and is currently running in test mode. We have some vfld files for CMEPS_prod in the data directory for the same dates as the other modelling systems. Each member runs every three hours, with members 1 and 2 at 00, 03..., 21; members 5 and 6 at 01, 04..., 22; and members 3 and 4 at 02, 05..., 23. To construct the ensemble for 03, we need members from 03, 02 and 01. We specifiy what lags we need as a named list that is the same length as the members argument.
+```{r}
+read_forecast(
+  start_date    = 2019021700,           
+  end_date      = 2019021718,           
+  fcst_model    = "CMEPS_prod", 
+  parameter     = "T2m",                
+  lead_time     = seq(0, 12, 3), 
+  members       = c(0, 1, 3, 4, 5, 6),
+  lags          = c(0, 0, 2, 2, 1, 1),
+  by            = "3h",                
+  file_path     = here("data/vfld"),    
+  file_template = "vfld_eps",
+  return_data   = TRUE                  
+)
+```
+
+Your turn
+
+* Get CMEPS_prod data for all of the same parameters as before and write to SQLite files 
+* Do the same for precipitation ("Pcp") for both CMEPS_prod and MEPS_prod
+
+Solutions
+
+* Get CMEPS_prod data for all of the same parameters as before and write to SQLite files 
+```{r}
+read_forecast(
+  start_date          = 2019021700,           
+  end_date            = 2019021718,           
+  fcst_model          = "CMEPS_prod", 
+  parameter           = c("T2m", "S10m", "T", "Td"),                 
+  lead_time           = seq(0, 12, 3), 
+  members             = c(0, 1, 3, 4, 5, 6),
+  lags                = c(0, 0, 2, 2, 1, 1),
+  by                  = "3h",                
+  file_path           = here("data/vfld"),    
+  file_template       = "vfld_eps",
+  transformation_opts = interpolate_opts(keep_model_t2m  = TRUE),
+  output_file_opts    = sqlite_opts(path = here("data/FCTABLE/ensemble"))
+)
+```
+
+ 
+* Do the same for precipitation ("Pcp") for both CMEPS_prod and MEPS_prod
+```{r}
+read_forecast(
+  start_date      = 2019021700,           
+  end_date        = 2019021718,           
+  fcst_model      = c("MEPS_prod", "CMEPS_prod"), 
+  parameter       = "Pcp",                 
+  lead_time       = seq(0, 12, 3), 
+  members         = list(MEPS_prod = seq(0, 9), CMEPS_prod = c(0, 1, 3, 4, 5, 6)),
+  lags            = list(CMEPS_prod = c(0, 0, 2, 2, 1, 1)),
+  by              = "3h",                
+  file_path       = here("data/vfld"),    
+  file_template   = "vfld_eps",
+  output_file_opts = sqlite_opts(path = here("data/FCTABLE/ensemble")), 
+)
+```
+
