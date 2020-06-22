@@ -8,7 +8,7 @@ knitr::opts_chunk$set(echo = TRUE, collapse = TRUE, message = FALSE, warning = F
 ```
 
 ### Introduction
-We now have all of our data prepared for harp and we aer ready to work with. That work includes undertsanding how harp data are structured, how to plot forecast data, how to manipulate the data, and verification.
+We now have all of our data prepared for harp and we are ready to work with. That work includes undertsanding how harp data are structured, how to plot forecast data, how to manipulate the data, and verification.
 
 We'll be making use of all of the harp packages in this section, so we can just attach the full set of harp packages (and as always tidyverse and here)
 
