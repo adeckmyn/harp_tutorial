@@ -1,13 +1,6 @@
----
-title: "Working with point data - Part 1"
-output: html_document
----
+# Point Data 
 
-```{r setup04, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, collapse = TRUE, message = FALSE, warning = FALSE)
-```
-
-### Introduction
+## Introduction
 We now have all of our data prepared for harp and we are ready to work with. That work includes undertsanding how harp data are structured, how to plot forecast data, how to manipulate the data, and verification.
 
 We'll be making use of all of the harp packages in this section, so we can just attach the full set of harp packages (and as always tidyverse and here)
@@ -18,7 +11,7 @@ library(tidyverse)
 library(here)
 ```
 
-### Deterministic data
+## Deterministic data
 Let's start with our deterministic data from the AROME Arctic model and member 0 of MEPS. First we load the data into our environment with the function `read_point_forecast`. As with other functions, we need to tell the function the start and end dates that we want, the names of the models, the parameter, the frequency of the forecasts, the path to the data and whether it is deterministic or ensemble data. 
 ```{r}
 s10m <- read_point_forecast(
@@ -173,7 +166,7 @@ bind_fcst(s10m) %>%
     theme(legend.position = "bottom")
 ```
 
-#### Verifying deterministic forecasts
+### Verifying deterministic forecasts
 
 Now that we have both forecasts and observations we can verify the forecasts. This is very simple in harp - we just run the function `det_verify` giving that data and telling it which column has the observations:
 ```{r}
@@ -234,7 +227,7 @@ plot_point_verif(
 ) 
 ```
 
-#### Verification by group
+### Verification by group
 The default behaviour of harp verification functions is to compute the verification metrics for each lead time. However, you can also compute the scores for any groups of data, much in the same way as `group_by` enables you to do. In this case groups are specified in the `groupings` argument to the verification function, and unlike `group_by` the column names you wish to use for grouping variables must be quoted (this may change in the future for consistency with `group_by`) and if there are more than one in a charcater vector. We could for example compute scores for each valid time:
 ```{r}
 (verif_s10m <- det_verify(s10m, S10m, groupings = "validdate"))
@@ -307,7 +300,7 @@ plot_point_verif(
   facet_grid(cols = vars(station_height), rows = vars(fct_inorder(threshold)))
 ```
 
-#### Vertical profiles
+### Vertical profiles
 When we converted our data to sqlite, we also converted some upper air data for temperature and dew point temperature. To read in upper air data, we need to tell `read_point_forecast` and `read_point_obs` what the vertical coordinate is. 
 ```{r}
 (t_upper <- read_point_forecast(

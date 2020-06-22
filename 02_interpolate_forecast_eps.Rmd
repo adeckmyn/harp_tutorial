@@ -1,13 +1,4 @@
----
-title: "Interpolating model outputs - EPS"
-output: html_document
----
-  
-```{r setup02, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, collapse = TRUE, message = FALSE, warning = FALSE)
-```
-
-### Introduction
+## Ensemble forecast data
 The interpolation of EPS model data works in much the same way as for deterministic model data, using the `read_forecast` function. By adding the members argument, we tell `read_forecast` that we are reading ensemble data. 
 
 

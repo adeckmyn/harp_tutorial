@@ -12,6 +12,7 @@ description: "This will form the harp tutorial / book."
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+# Getting Started
 
 ## System Requirements
 ### R

@@ -1,17 +1,7 @@
----
-title: "Working with point data - Part 2"
-output: html_document
----
-
-```{r setup05, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, collapse = TRUE, message = FALSE, warning = FALSE)
-```
-
-### Introduction
+## Reading in ensemble data
 
 Now we have seen harp in action with deterministic data, let's move on to ensemble data. harp's origins are in verification of ensemble data, so the functionality here is a little more mature. Many of the same functions that were introduced in the deterministic section can be used for ensemble data as well. There are also functions that currently only work with ensemble data and are in the process of being upgraded to handle deterministic forecasts as well. 
 
-### Reading in ensemble data
 We can use the same `read_point_forecast` function to read in ensemble data - we just need to tell it that we are reading ensemble data by setting `fcst_type = "eps"`. 
 ```{r}
 library(tidyverse)
@@ -156,7 +146,7 @@ plot_scatter(t2m, "MEPS_prod", T2m, facet_members = FALSE)
 plot_scatter(filter(precip_3h, AccPcp3h > 0.25), "MEPS_prod", AccPcp3h)
 ```
 
-#### Multi model ensembles
+### Multi model ensembles
 When we generated SQLite FCTABLE files for a fake multimodel ensemble we needed to specify a lot of details about the ensemble, such as the names and member numbers for each sub model. When we read those data in from the FCTABLE files, that information is already there. So, let's read in our multi model ensemble and see what we get. 
 ```{r}
 read_point_forecast(
@@ -195,7 +185,7 @@ Now we have two harp_fcst objects for 2m temperature, t2m and t2m_mm. We can eas
 c(t2m, t2m_mm)
 ```
 
-#### Lagged ensembles
+### Lagged ensembles
 Reading lagged ensembles from FCTABLE files is also easier than in the conversion to SQLite step. Since FCTABLE files were saved for each forecast cycle, and the members for that cycle in the file, all we need to do is tell read_point_forecast the appropriate lags. Here we need to be a bit careful about what we're doing, especially if we are reading in data from other models at the same. In the case of CMEPS there is a new set of ensemble members every three hours, but if we want to compare it with MEPS, which has a full set of members every six hours, which should set the `by = "6h"` and use our lags specification to ensure we read in the correct amount of data for CMEPS, by ensuring there are lags from zero to five hours. This probably becomes clearer with an example... 
 ```{r}
 (t2m <- read_point_forecast(
@@ -273,8 +263,8 @@ plot_station_eps(
 
 There are still a few problems with `plot_station_eps` so tread carefully!
 
-#### Shifted forecasts
-Lets's say you want to compare an ensmeble with another but with the time shifted. i.e. how does a forecast that is 6 hours old compare with the current forecast. We can do that by shifting the forecast - that means adjusting the forecast start time and the forecast lead time by 6 hours so the forecast appears to have been run at a different time. We can do this with `shift_forecast`. 
+### Shifted forecasts
+Let's say you want to compare an ensmeble with another but with the time shifted. i.e. how does a forecast that is 6 hours old compare with the current forecast. We can do that by shifting the forecast - that means adjusting the forecast start time and the forecast lead time by 6 hours so the forecast appears to have been run at a different time. We can do this with `shift_forecast`. 
 
 To illustrate, we read in the MEPS_prod data, for 10m wind speed, just to be different!
 ```{r}
@@ -451,7 +441,7 @@ plot_point_verif(
   scale_x_continuous(breaks = seq(0, 9, 3))
 ```
 
-#### Verification by groups
+### Verification by groups
 As we mentioned in the deterministic section, we can compute verification scores for groups of data. So in our data we have forecasts from 3 different cycles: 06, 12, and 18 UTC. (Let's forget for a moment that also means only 3 forecasts and assume that the data include forecasts from several days running with the same start times every day). We can use the `groupings` argument to say that we want to verify for each lead time for each forecast cycle. 
 ```{r}
 ens_verify(t2m, T2m, groupings = c("leadtime", "fcst_cycle"))
@@ -503,7 +493,7 @@ plot_point_verif(
 )
 ```
 
-#### Saving the verification data
+### Saving the verification data
 You can save your verification data with the function `save_point_verif`. You simply give it the data and the directory you want to save in. The filenames are generated from the data, so although you can provide a template, it is best not to. 
 ```{r}
 save_point_verif(verif_t2m, verif_path = here("data/verification"))
@@ -518,13 +508,20 @@ shiny_plot_point_verif(here("data/verification"))
 TO BE ADDED
 -----------
 
-* vertical profiles
-* verification of vertical profiles
-* plot vertical verification
-* jitter forecast
-* conditional verification
-* joint probabilities (maybe)
-* bootstrapping
-* pooled bootstrapping
+### vertical profiles
+
+### verification of vertical profiles
+
+### plot vertical verification
+
+### jitter forecast
+
+### conditional verification
+
+### joint probabilities (maybe)
+
+### bootstrapping
+
+### pooled bootstrapping
 
 

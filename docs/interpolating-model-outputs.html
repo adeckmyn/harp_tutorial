@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 2 Interpolating model outputs | harp Tutorial</title>
+  <meta name="description" content="This will form the harp tutorial / book." />
+  <meta name="generator" content="bookdown 0.19 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 2 Interpolating model outputs | harp Tutorial" />
+  <meta property="og:type" content="book" />
+  
+  
+  <meta property="og:description" content="This will form the harp tutorial / book." />
+  <meta name="github-repo" content="andrew-MET/harpTutorial" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 2 Interpolating model outputs | harp Tutorial" />
+  
+  <meta name="twitter:description" content="This will form the harp tutorial / book." />
+  
+
+<meta name="author" content="Andrew Singleton" />
+
+
+<meta name="date" content="2020-06-22" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="index.html"/>
+<link rel="next" href="convert-observations-to-sqlite.html"/>
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+
+
+
+<style type="text/css">
+code.sourceCode > span { display: inline-block; line-height: 1.25; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Getting Started</a><ul>
+<li class="chapter" data-level="1.1" data-path="index.html"><a href="index.html#system-requirements"><i class="fa fa-check"></i><b>1.1</b> System Requirements</a><ul>
+<li class="chapter" data-level="1.1.1" data-path="index.html"><a href="index.html#r"><i class="fa fa-check"></i><b>1.1.1</b> R</a></li>
+<li class="chapter" data-level="1.1.2" data-path="index.html"><a href="index.html#system-libraries"><i class="fa fa-check"></i><b>1.1.2</b> System libraries</a></li>
+<li class="chapter" data-level="1.1.3" data-path="index.html"><a href="index.html#rstudio"><i class="fa fa-check"></i><b>1.1.3</b> RStudio</a></li>
+</ul></li>
+<li class="chapter" data-level="1.2" data-path="index.html"><a href="index.html#installation"><i class="fa fa-check"></i><b>1.2</b> Installation</a></li>
+<li class="chapter" data-level="1.3" data-path="index.html"><a href="index.html#setting-up-a-project"><i class="fa fa-check"></i><b>1.3</b> Setting up a project</a><ul>
+<li class="chapter" data-level="1.3.1" data-path="index.html"><a href="index.html#rstudio-1"><i class="fa fa-check"></i><b>1.3.1</b> RStudio</a></li>
+<li class="chapter" data-level="1.3.2" data-path="index.html"><a href="index.html#from-the-terminal"><i class="fa fa-check"></i><b>1.3.2</b> From the terminal</a></li>
+<li class="chapter" data-level="1.3.3" data-path="index.html"><a href="index.html#linking-to-the-data"><i class="fa fa-check"></i><b>1.3.3</b> Linking to the data</a></li>
+</ul></li>
+<li class="chapter" data-level="1.4" data-path="index.html"><a href="index.html#learning-r"><i class="fa fa-check"></i><b>1.4</b> Learning R</a></li>
+<li class="chapter" data-level="1.5" data-path="index.html"><a href="index.html#isolating-harp"><i class="fa fa-check"></i><b>1.5</b> Isolating harp</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="interpolating-model-outputs.html"><a href="interpolating-model-outputs.html"><i class="fa fa-check"></i><b>2</b> Interpolating model outputs</a><ul>
+<li class="chapter" data-level="2.1" data-path="interpolating-model-outputs.html"><a href="interpolating-model-outputs.html#introduction"><i class="fa fa-check"></i><b>2.1</b> Introduction</a></li>
+<li class="chapter" data-level="2.2" data-path="interpolating-model-outputs.html"><a href="interpolating-model-outputs.html#file-templates"><i class="fa fa-check"></i><b>2.2</b> File templates</a></li>
+<li class="chapter" data-level="2.3" data-path="interpolating-model-outputs.html"><a href="interpolating-model-outputs.html#deterministic-forecast-data"><i class="fa fa-check"></i><b>2.3</b> Deterministic forecast data</a></li>
+<li class="chapter" data-level="2.4" data-path="interpolating-model-outputs.html"><a href="interpolating-model-outputs.html#ensemble-forecast-data"><i class="fa fa-check"></i><b>2.4</b> Ensemble forecast data</a><ul>
+<li class="chapter" data-level="2.4.1" data-path="interpolating-model-outputs.html"><a href="interpolating-model-outputs.html#read-and-interpolate-2m-temperature"><i class="fa fa-check"></i><b>2.4.1</b> Read and interpolate 2m temperature</a></li>
+<li class="chapter" data-level="2.4.2" data-path="interpolating-model-outputs.html"><a href="interpolating-model-outputs.html#lagged-ensembles"><i class="fa fa-check"></i><b>2.4.2</b> Lagged ensembles</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="convert-observations-to-sqlite.html"><a href="convert-observations-to-sqlite.html"><i class="fa fa-check"></i><b>3</b> Convert observations to SQLite</a><ul>
+<li class="chapter" data-level="3.1" data-path="convert-observations-to-sqlite.html"><a href="convert-observations-to-sqlite.html#introduction-1"><i class="fa fa-check"></i><b>3.1</b> Introduction</a></li>
+<li class="chapter" data-level="3.2" data-path="convert-observations-to-sqlite.html"><a href="convert-observations-to-sqlite.html#converting-observations-to-sqlite"><i class="fa fa-check"></i><b>3.2</b> Converting observations to SQLite</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="point-data.html"><a href="point-data.html"><i class="fa fa-check"></i><b>4</b> Point Data</a><ul>
+<li class="chapter" data-level="4.1" data-path="point-data.html"><a href="point-data.html#introduction-2"><i class="fa fa-check"></i><b>4.1</b> Introduction</a></li>
+<li class="chapter" data-level="4.2" data-path="point-data.html"><a href="point-data.html#deterministic-data"><i class="fa fa-check"></i><b>4.2</b> Deterministic data</a><ul>
+<li class="chapter" data-level="4.2.1" data-path="point-data.html"><a href="point-data.html#verifying-deterministic-forecasts"><i class="fa fa-check"></i><b>4.2.1</b> Verifying deterministic forecasts</a></li>
+<li class="chapter" data-level="4.2.2" data-path="point-data.html"><a href="point-data.html#verification-by-group"><i class="fa fa-check"></i><b>4.2.2</b> Verification by group</a></li>
+<li class="chapter" data-level="4.2.3" data-path="point-data.html"><a href="point-data.html#vertical-profiles"><i class="fa fa-check"></i><b>4.2.3</b> Vertical profiles</a></li>
+</ul></li>
+<li class="chapter" data-level="4.3" data-path="point-data.html"><a href="point-data.html#reading-in-ensemble-data"><i class="fa fa-check"></i><b>4.3</b> Reading in ensemble data</a><ul>
+<li class="chapter" data-level="4.3.1" data-path="point-data.html"><a href="point-data.html#multi-model-ensembles"><i class="fa fa-check"></i><b>4.3.1</b> Multi model ensembles</a></li>
+<li class="chapter" data-level="4.3.2" data-path="point-data.html"><a href="point-data.html#lagged-ensembles-1"><i class="fa fa-check"></i><b>4.3.2</b> Lagged ensembles</a></li>
+<li class="chapter" data-level="4.3.3" data-path="point-data.html"><a href="point-data.html#shifted-forecasts"><i class="fa fa-check"></i><b>4.3.3</b> Shifted forecasts</a></li>
+<li class="chapter" data-level="4.3.4" data-path="point-data.html"><a href="point-data.html#verification"><i class="fa fa-check"></i><b>4.3.4</b> Verification</a></li>
+<li class="chapter" data-level="4.3.5" data-path="point-data.html"><a href="point-data.html#verification-by-groups"><i class="fa fa-check"></i><b>4.3.5</b> Verification by groups</a></li>
+<li class="chapter" data-level="4.3.6" data-path="point-data.html"><a href="point-data.html#saving-the-verification-data"><i class="fa fa-check"></i><b>4.3.6</b> Saving the verification data</a></li>
+</ul></li>
+<li class="chapter" data-level="4.4" data-path="point-data.html"><a href="point-data.html#to-be-added"><i class="fa fa-check"></i><b>4.4</b> TO BE ADDED</a><ul>
+<li class="chapter" data-level="4.4.1" data-path="point-data.html"><a href="point-data.html#vertical-profiles-1"><i class="fa fa-check"></i><b>4.4.1</b> vertical profiles</a></li>
+<li class="chapter" data-level="4.4.2" data-path="point-data.html"><a href="point-data.html#verification-of-vertical-profiles"><i class="fa fa-check"></i><b>4.4.2</b> verification of vertical profiles</a></li>
+<li class="chapter" data-level="4.4.3" data-path="point-data.html"><a href="point-data.html#plot-vertical-verification"><i class="fa fa-check"></i><b>4.4.3</b> plot vertical verification</a></li>
+<li class="chapter" data-level="4.4.4" data-path="point-data.html"><a href="point-data.html#jitter-forecast"><i class="fa fa-check"></i><b>4.4.4</b> jitter forecast</a></li>
+<li class="chapter" data-level="4.4.5" data-path="point-data.html"><a href="point-data.html#conditional-verification"><i class="fa fa-check"></i><b>4.4.5</b> conditional verification</a></li>
+<li class="chapter" data-level="4.4.6" data-path="point-data.html"><a href="point-data.html#joint-probabilities-maybe"><i class="fa fa-check"></i><b>4.4.6</b> joint probabilities (maybe)</a></li>
+<li class="chapter" data-level="4.4.7" data-path="point-data.html"><a href="point-data.html#bootstrapping"><i class="fa fa-check"></i><b>4.4.7</b> bootstrapping</a></li>
+<li class="chapter" data-level="4.4.8" data-path="point-data.html"><a href="point-data.html#pooled-bootstrapping"><i class="fa fa-check"></i><b>4.4.8</b> pooled bootstrapping</a></li>
+</ul></li>
+</ul></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">harp Tutorial</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="interpolating-model-outputs" class="section level1">
+<h1><span class="header-section-number">Chapter 2</span> Interpolating model outputs</h1>
+<div id="introduction" class="section level2">
+<h2><span class="header-section-number">2.1</span> Introduction</h2>
+<p>The “internal” file format for harp is SQLite. SQLite allows fast access to the data and the ability to filter exactly what you want to read. Once our data are in SQLite format, we don’t have to convert them again.</p>
+<p>In most cases you also need to interpolate forecast data to station locations, and harp enables you to read the data, interpolate it, and write the interpolated data in one function. This can be done for grib files, FA files, netcdf files (from MET Norway) and vfld files (which are already interpolated). All of the file IO in harp is handled by the package harpIO.</p>
+</div>
+<div id="file-templates" class="section level2">
+<h2><span class="header-section-number">2.2</span> File templates</h2>
+<p>NWP files typically have information from any of the date, lead time, parameter, member number (for ensemble forecasts) and potentially more in the file name and / or directory structure. This means that the exact file names are never the same though they will always have the same structure. harp provides functionality for using templates for file names, and also has a number of built in templates for known formats. You can list these using <code>show_file_templates()</code> and see the way that the templates are built.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="interpolating-model-outputs.html#cb11-1"></a><span class="kw">library</span>(harp)</span>
+<span id="cb11-2"><a href="interpolating-model-outputs.html#cb11-2"></a><span class="kw">library</span>(here)</span>
+<span id="cb11-3"><a href="interpolating-model-outputs.html#cb11-3"></a><span class="kw">show_file_templates</span>()</span>
+<span id="cb11-4"><a href="interpolating-model-outputs.html#cb11-4"></a><span class="co">## # A tibble: 31 x 2</span></span>
+<span id="cb11-5"><a href="interpolating-model-outputs.html#cb11-5"></a><span class="co">##    template_name         template                                                                                         </span></span>
+<span id="cb11-6"><a href="interpolating-model-outputs.html#cb11-6"></a><span class="co">##    &lt;chr&gt;                 &lt;chr&gt;                                                                                            </span></span>
+<span id="cb11-7"><a href="interpolating-model-outputs.html#cb11-7"></a><span class="co">##  1 arome_arctic_extract… /lustre/storeB/immutable/archive/projects/metproduction/DNMI_AROME_ARCTIC/{YYYY}/{MM}/{DD}/arome…</span></span>
+<span id="cb11-8"><a href="interpolating-model-outputs.html#cb11-8"></a><span class="co">##  2 arome_arctic_full     /lustre/storeB/immutable/archive/projects/metproduction/DNMI_AROME_ARCTIC/{YYYY}/{MM}/{DD}/arome…</span></span>
+<span id="cb11-9"><a href="interpolating-model-outputs.html#cb11-9"></a><span class="co">##  3 arome_arctic_sfx      /lustre/storeB/immutable/archive/projects/metproduction/DNMI_AROME_ARCTIC/{YYYY}/{MM}/{DD}/arome…</span></span>
+<span id="cb11-10"><a href="interpolating-model-outputs.html#cb11-10"></a><span class="co">##  4 fctable               {file_path}/{fcst_model}/{YYYY}/{MM}/FCTABLE_{parameter}_{YYYY}{MM}_{HH}.sqlite                  </span></span>
+<span id="cb11-11"><a href="interpolating-model-outputs.html#cb11-11"></a><span class="co">##  5 fctable_det           {file_path}/{det_model}/{YYYY}/{MM}/FCTABLE_{parameter}_{YYYY}{MM}_{HH}.sqlite                   </span></span>
+<span id="cb11-12"><a href="interpolating-model-outputs.html#cb11-12"></a><span class="co">##  6 fctable_eps           {file_path}/{eps_model}/{YYYY}/{MM}/FCTABLE_{parameter}_{YYYY}{MM}_{HH}+{LDT3}.sqlite            </span></span>
+<span id="cb11-13"><a href="interpolating-model-outputs.html#cb11-13"></a><span class="co">##  7 fctable_eps_all_cycl… {file_path}/{eps_model}/{YYYY}/{MM}/FCTABLE_{parameter}_{YYYY}{MM}+{LDT3}.sqlite                 </span></span>
+<span id="cb11-14"><a href="interpolating-model-outputs.html#cb11-14"></a><span class="co">##  8 fctable_eps_all_leads {file_path}/{eps_model}/{YYYY}/{MM}/FCTABLE_{parameter}_{YYYY}{MM}_{HH}.sqlite                   </span></span>
+<span id="cb11-15"><a href="interpolating-model-outputs.html#cb11-15"></a><span class="co">##  9 glameps_grib          {file_path}/{eps_model}/{sub_model}/{YYYY}/{MM}/{DD}/{HH}/mbr{MBR3}/fc{YYYY}{MM}{DD}_{HH}+{LDT3}…</span></span>
+<span id="cb11-16"><a href="interpolating-model-outputs.html#cb11-16"></a><span class="co">## 10 harmoneps_grib        {file_path}/{YYYY}/{MM}/{DD}/{HH}/mbr{MBR3}/fc{YYYY}{MM}{DD}{HH}+{LDT3}grib                      </span></span>
+<span id="cb11-17"><a href="interpolating-model-outputs.html#cb11-17"></a><span class="co">## 11 harmoneps_grib_fp     {file_path}/{YYYY}/{MM}/{DD}/{HH}/mbr{MBR3}/fc{YYYY}{MM}{DD}{HH}+{LDT3}grib_fp                   </span></span>
+<span id="cb11-18"><a href="interpolating-model-outputs.html#cb11-18"></a><span class="co">## 12 harmoneps_grib_sfx    {file_path}/{YYYY}/{MM}/{DD}/{HH}/mbr{MBR3}/fc{YYYY}{MM}{DD}{HH}+{LDT3}grib_sfx                  </span></span>
+<span id="cb11-19"><a href="interpolating-model-outputs.html#cb11-19"></a><span class="co">## 13 harmonie_grib         {file_path}/{YYYY}/{MM}/{DD}/{HH}/fc{YYYY}{MM}{DD}{HH}+{LDT3}grib                                </span></span>
+<span id="cb11-20"><a href="interpolating-model-outputs.html#cb11-20"></a><span class="co">## 14 harmonie_grib_fp      {file_path}/{YYYY}/{MM}/{DD}/{HH}/fc{YYYY}{MM}{DD}{HH}+{LDT3}grib_fp                             </span></span>
+<span id="cb11-21"><a href="interpolating-model-outputs.html#cb11-21"></a><span class="co">## 15 harmonie_grib_sfx     {file_path}/{YYYY}/{MM}/{DD}/{HH}/fc{YYYY}{MM}{DD}{HH}+{LDT3}grib_sfx                            </span></span>
+<span id="cb11-22"><a href="interpolating-model-outputs.html#cb11-22"></a><span class="co">## 16 meps_cntrl_extracted  /lustre/storeB/immutable/archive/projects/metproduction/MEPS/{YYYY}/{MM}/{DD}/meps_mbr0_extracte…</span></span>
+<span id="cb11-23"><a href="interpolating-model-outputs.html#cb11-23"></a><span class="co">## 17 meps_cntrl_sfx        /lustre/storeB/immutable/archive/projects/metproduction/MEPS/{YYYY}/{MM}/{DD}/meps_mbr0_sfx_2_5k…</span></span>
+<span id="cb11-24"><a href="interpolating-model-outputs.html#cb11-24"></a><span class="co">## 18 meps_extracted        /lustre/storeB/immutable/archive/projects/metproduction/MEPS/{YYYY}/{MM}/{DD}/meps_extracted_2_5…</span></span>
+<span id="cb11-25"><a href="interpolating-model-outputs.html#cb11-25"></a><span class="co">## 19 meps_full             /lustre/storeB/immutable/archive/projects/metproduction/MEPS/{YYYY}/{MM}/{DD}/meps_full_2_5km_{Y…</span></span>
+<span id="cb11-26"><a href="interpolating-model-outputs.html#cb11-26"></a><span class="co">## 20 meps_sfx              /lustre/storeB/immutable/archive/projects/metproduction/MEPS/{YYYY}/{MM}/{DD}/meps_sfx_2_5km_{YY…</span></span>
+<span id="cb11-27"><a href="interpolating-model-outputs.html#cb11-27"></a><span class="co">## 21 meps_subset           /lustre/storeB/immutable/archive/projects/metproduction/MEPS/{YYYY}/{MM}/{DD}/meps_subset_2_5km_…</span></span>
+<span id="cb11-28"><a href="interpolating-model-outputs.html#cb11-28"></a><span class="co">## 22 obstable              {file_path}/OBSTABLE_{YYYY}.sqlite                                                               </span></span>
+<span id="cb11-29"><a href="interpolating-model-outputs.html#cb11-29"></a><span class="co">## 23 vfld                  {file_path}/{fcst_model}/vfld{fcst_model}{YYYY}{MM}{DD}{HH}{LDT2}                                </span></span>
+<span id="cb11-30"><a href="interpolating-model-outputs.html#cb11-30"></a><span class="co">## 24 vfld_det              {file_path}/{det_model}/vfld{det_model}{YYYY}{MM}{DD}{HH}{LDT2}                                  </span></span>
+<span id="cb11-31"><a href="interpolating-model-outputs.html#cb11-31"></a><span class="co">## 25 vfld_det_noexp        {file_path}/{det_model}/vfld{YYYY}{MM}{DD}{HH}{LDT2}                                             </span></span>
+<span id="cb11-32"><a href="interpolating-model-outputs.html#cb11-32"></a><span class="co">## 26 vfld_eps              {file_path}/{sub_model}/vfld{sub_model}mbr{MBR3}{YYYY}{MM}{DD}{HH}{LDT2}                         </span></span>
+<span id="cb11-33"><a href="interpolating-model-outputs.html#cb11-33"></a><span class="co">## 27 vfld_eps_noexp        {file_path}/{sub_model}/vfldmbr{MBR3}{YYYY}{MM}{DD}{HH}{LDT2}                                    </span></span>
+<span id="cb11-34"><a href="interpolating-model-outputs.html#cb11-34"></a><span class="co">## 28 vfld_multimodel       {file_path}/{sub_model}/vfld{sub_model}mbr{MBR3}{YYYY}{MM}{DD}{HH}{LDT2}                         </span></span>
+<span id="cb11-35"><a href="interpolating-model-outputs.html#cb11-35"></a><span class="co">## 29 vfld_multimodel_noexp {file_path}/{sub_model}/vfldmbr{MBR3}{YYYY}{MM}{DD}{HH}{LDT2}                                    </span></span>
+<span id="cb11-36"><a href="interpolating-model-outputs.html#cb11-36"></a><span class="co">## 30 vfld_noexp            {file_path}/{fcst_model}/vfldmbr{MBR3}{YYYY}{MM}{DD}{HH}{LDT2}                                   </span></span>
+<span id="cb11-37"><a href="interpolating-model-outputs.html#cb11-37"></a><span class="co">## 31 vobs                  {file_path}/vobs{YYYY}{MM}{DD}{HH}</span></span></code></pre></div>
+<p>Since the output is typically truncated you can see one of the templates in full by supplying the row number in the original output. For example, to see the template for vfld files</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="interpolating-model-outputs.html#cb12-1"></a><span class="kw">show_file_templates</span>(<span class="dv">23</span>)</span>
+<span id="cb12-2"><a href="interpolating-model-outputs.html#cb12-2"></a><span class="co">## </span></span>
+<span id="cb12-3"><a href="interpolating-model-outputs.html#cb12-3"></a><span class="co">## template_name:</span></span>
+<span id="cb12-4"><a href="interpolating-model-outputs.html#cb12-4"></a><span class="co">##  vfld </span></span>
+<span id="cb12-5"><a href="interpolating-model-outputs.html#cb12-5"></a><span class="co">##  </span></span>
+<span id="cb12-6"><a href="interpolating-model-outputs.html#cb12-6"></a><span class="co">## template:</span></span>
+<span id="cb12-7"><a href="interpolating-model-outputs.html#cb12-7"></a><span class="co">##  {file_path}/{fcst_model}/vfld{fcst_model}{YYYY}{MM}{DD}{HH}{LDT2}</span></span></code></pre></div>
+</div>
+<div id="deterministic-forecast-data" class="section level2">
+<h2><span class="header-section-number">2.3</span> Deterministic forecast data</h2>
+<p>Let’s go ahead and read some data. In the data directory you will find a vfld directory and there you will find a directory for AROME_Arctic_prod. Under that directory you will find vfld files for one day of forecasts. To read the date we will use the function <code>read_forecast</code>. Each of the arguments are annotated so that you understand what they are for.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="interpolating-model-outputs.html#cb13-1"></a><span class="kw">read_forecast</span>(</span>
+<span id="cb13-2"><a href="interpolating-model-outputs.html#cb13-2"></a>  <span class="dt">start_date    =</span> <span class="dv">2019021700</span>,           <span class="co"># the first forecast for which we have data</span></span>
+<span id="cb13-3"><a href="interpolating-model-outputs.html#cb13-3"></a>  <span class="dt">end_date      =</span> <span class="dv">2019021718</span>,           <span class="co"># the last forecast for which we have data</span></span>
+<span id="cb13-4"><a href="interpolating-model-outputs.html#cb13-4"></a>  <span class="dt">fcst_model     =</span> <span class="st">&quot;AROME_Arctic_prod&quot;</span>, <span class="co"># the name of the deterministic model as in the file name</span></span>
+<span id="cb13-5"><a href="interpolating-model-outputs.html#cb13-5"></a>  <span class="dt">parameter     =</span> <span class="st">&quot;T2m&quot;</span>,                <span class="co"># We are going to read 2m temperature</span></span>
+<span id="cb13-6"><a href="interpolating-model-outputs.html#cb13-6"></a>  <span class="dt">lead_time     =</span> <span class="kw">seq</span>(<span class="dv">0</span>, <span class="dv">48</span>, <span class="dv">3</span>),        <span class="co"># We have data for lead times 0 - 48 at 3 hour intervals</span></span>
+<span id="cb13-7"><a href="interpolating-model-outputs.html#cb13-7"></a>  <span class="dt">by            =</span> <span class="st">&quot;6h&quot;</span>,                 <span class="co"># We have forecasts every 6 hours</span></span>
+<span id="cb13-8"><a href="interpolating-model-outputs.html#cb13-8"></a>  <span class="dt">file_path     =</span> <span class="kw">here</span>(<span class="st">&quot;data/vfld&quot;</span>),    <span class="co"># We don&#39;t include AROME_Arctic_prod in the path...</span></span>
+<span id="cb13-9"><a href="interpolating-model-outputs.html#cb13-9"></a>  <span class="dt">file_template =</span> <span class="st">&quot;vfld&quot;</span>,               <span class="co"># ...because it&#39;s in the template</span></span>
+<span id="cb13-10"><a href="interpolating-model-outputs.html#cb13-10"></a>  <span class="dt">return_data   =</span> <span class="ot">TRUE</span>                  <span class="co"># We want to get some data back - by default nothing is returned</span></span>
+<span id="cb13-11"><a href="interpolating-model-outputs.html#cb13-11"></a>)</span>
+<span id="cb13-12"><a href="interpolating-model-outputs.html#cb13-12"></a><span class="co">## ● AROME_Arctic_prod</span></span>
+<span id="cb13-13"><a href="interpolating-model-outputs.html#cb13-13"></a><span class="co">## # A tibble: 16,796 x 10</span></span>
+<span id="cb13-14"><a href="interpolating-model-outputs.html#cb13-14"></a><span class="co">##    fcdate              lead_time parameter   SID   lat   lon units validdate           fcst_cycle AROME_Arctic_prod_det</span></span>
+<span id="cb13-15"><a href="interpolating-model-outputs.html#cb13-15"></a><span class="co">##    &lt;dttm&gt;                  &lt;dbl&gt; &lt;chr&gt;     &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt; &lt;dttm&gt;              &lt;chr&gt;                      &lt;dbl&gt;</span></span>
+<span id="cb13-16"><a href="interpolating-model-outputs.html#cb13-16"></a><span class="co">##  1 2019-02-17 00:00:00         0 T2m        1001  70.9 -8.67 K     2019-02-17 00:00:00 00                          270.</span></span>
+<span id="cb13-17"><a href="interpolating-model-outputs.html#cb13-17"></a><span class="co">##  2 2019-02-17 00:00:00         0 T2m        1002  80.1 16.2  K     2019-02-17 00:00:00 00                          250.</span></span>
+<span id="cb13-18"><a href="interpolating-model-outputs.html#cb13-18"></a><span class="co">##  3 2019-02-17 00:00:00         0 T2m        1003  77   15.5  K     2019-02-17 00:00:00 00                          253.</span></span>
+<span id="cb13-19"><a href="interpolating-model-outputs.html#cb13-19"></a><span class="co">##  4 2019-02-17 00:00:00         0 T2m        1004  78.9 11.9  K     2019-02-17 00:00:00 00                          251.</span></span>
+<span id="cb13-20"><a href="interpolating-model-outputs.html#cb13-20"></a><span class="co">##  5 2019-02-17 00:00:00         0 T2m        1006  78.3 22.8  K     2019-02-17 00:00:00 00                          244.</span></span>
+<span id="cb13-21"><a href="interpolating-model-outputs.html#cb13-21"></a><span class="co">##  6 2019-02-17 00:00:00         0 T2m        1007  78.9 11.9  K     2019-02-17 00:00:00 00                          251.</span></span>
+<span id="cb13-22"><a href="interpolating-model-outputs.html#cb13-22"></a><span class="co">##  7 2019-02-17 00:00:00         0 T2m        1008  78.2 15.5  K     2019-02-17 00:00:00 00                          252.</span></span>
+<span id="cb13-23"><a href="interpolating-model-outputs.html#cb13-23"></a><span class="co">##  8 2019-02-17 00:00:00         0 T2m        1009  80.7 25.0  K     2019-02-17 00:00:00 00                          246.</span></span>
+<span id="cb13-24"><a href="interpolating-model-outputs.html#cb13-24"></a><span class="co">##  9 2019-02-17 00:00:00         0 T2m        1010  69.3 16.1  K     2019-02-17 00:00:00 00                          275.</span></span>
+<span id="cb13-25"><a href="interpolating-model-outputs.html#cb13-25"></a><span class="co">## 10 2019-02-17 00:00:00         0 T2m        1011  80.1 31.5  K     2019-02-17 00:00:00 00                          241.</span></span>
+<span id="cb13-26"><a href="interpolating-model-outputs.html#cb13-26"></a><span class="co">## # … with 16,786 more rows</span></span></code></pre></div>
+<p>We don’t have to only handle one model at a time, as long as they have the same file format and fit the same template. We also have data for MEPS, which is an ensemble, but we can just read member 0 by setting the correct template. When there are different options for each fcst_model they can be passed as a named list as below:</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="interpolating-model-outputs.html#cb14-1"></a><span class="kw">read_forecast</span>(</span>
+<span id="cb14-2"><a href="interpolating-model-outputs.html#cb14-2"></a>  <span class="dt">start_date    =</span> <span class="dv">2019021700</span>,           </span>
+<span id="cb14-3"><a href="interpolating-model-outputs.html#cb14-3"></a>  <span class="dt">end_date      =</span> <span class="dv">2019021718</span>,           </span>
+<span id="cb14-4"><a href="interpolating-model-outputs.html#cb14-4"></a>  <span class="dt">fcst_model    =</span> <span class="kw">c</span>(<span class="st">&quot;AROME_Arctic_prod&quot;</span>, <span class="st">&quot;MEPS_prod&quot;</span>),  </span>
+<span id="cb14-5"><a href="interpolating-model-outputs.html#cb14-5"></a>  <span class="dt">parameter     =</span> <span class="st">&quot;T2m&quot;</span>,                </span>
+<span id="cb14-6"><a href="interpolating-model-outputs.html#cb14-6"></a>  <span class="dt">lead_time     =</span> <span class="kw">seq</span>(<span class="dv">0</span>, <span class="dv">48</span>, <span class="dv">3</span>), </span>
+<span id="cb14-7"><a href="interpolating-model-outputs.html#cb14-7"></a>  <span class="dt">by            =</span> <span class="st">&quot;6h&quot;</span>,                </span>
+<span id="cb14-8"><a href="interpolating-model-outputs.html#cb14-8"></a>  <span class="dt">file_path     =</span> <span class="kw">here</span>(<span class="st">&quot;data/vfld&quot;</span>),    </span>
+<span id="cb14-9"><a href="interpolating-model-outputs.html#cb14-9"></a>  <span class="dt">file_template =</span> <span class="kw">list</span>(</span>
+<span id="cb14-10"><a href="interpolating-model-outputs.html#cb14-10"></a>    <span class="dt">AROME_Arctic_prod =</span> <span class="st">&quot;vfld&quot;</span>, </span>
+<span id="cb14-11"><a href="interpolating-model-outputs.html#cb14-11"></a>    <span class="dt">MEPS_prod         =</span> <span class="st">&quot;{fcst_model}/vfld{fcst_model}mbr000{YYYY}{MM}{DD}{HH}{LDT2}&quot;</span></span>
+<span id="cb14-12"><a href="interpolating-model-outputs.html#cb14-12"></a>  ),</span>
+<span id="cb14-13"><a href="interpolating-model-outputs.html#cb14-13"></a>  <span class="dt">return_data   =</span> <span class="ot">TRUE</span>                  </span>
+<span id="cb14-14"><a href="interpolating-model-outputs.html#cb14-14"></a>)</span>
+<span id="cb14-15"><a href="interpolating-model-outputs.html#cb14-15"></a><span class="co">## ● AROME_Arctic_prod</span></span>
+<span id="cb14-16"><a href="interpolating-model-outputs.html#cb14-16"></a><span class="co">## # A tibble: 16,796 x 10</span></span>
+<span id="cb14-17"><a href="interpolating-model-outputs.html#cb14-17"></a><span class="co">##    fcdate              lead_time parameter   SID   lat   lon units validdate           fcst_cycle AROME_Arctic_prod_det</span></span>
+<span id="cb14-18"><a href="interpolating-model-outputs.html#cb14-18"></a><span class="co">##    &lt;dttm&gt;                  &lt;dbl&gt; &lt;chr&gt;     &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt; &lt;dttm&gt;              &lt;chr&gt;                      &lt;dbl&gt;</span></span>
+<span id="cb14-19"><a href="interpolating-model-outputs.html#cb14-19"></a><span class="co">##  1 2019-02-17 00:00:00         0 T2m        1001  70.9 -8.67 K     2019-02-17 00:00:00 00                          270.</span></span>
+<span id="cb14-20"><a href="interpolating-model-outputs.html#cb14-20"></a><span class="co">##  2 2019-02-17 00:00:00         0 T2m        1002  80.1 16.2  K     2019-02-17 00:00:00 00                          250.</span></span>
+<span id="cb14-21"><a href="interpolating-model-outputs.html#cb14-21"></a><span class="co">##  3 2019-02-17 00:00:00         0 T2m        1003  77   15.5  K     2019-02-17 00:00:00 00                          253.</span></span>
+<span id="cb14-22"><a href="interpolating-model-outputs.html#cb14-22"></a><span class="co">##  4 2019-02-17 00:00:00         0 T2m        1004  78.9 11.9  K     2019-02-17 00:00:00 00                          251.</span></span>
+<span id="cb14-23"><a href="interpolating-model-outputs.html#cb14-23"></a><span class="co">##  5 2019-02-17 00:00:00         0 T2m        1006  78.3 22.8  K     2019-02-17 00:00:00 00                          244.</span></span>
+<span id="cb14-24"><a href="interpolating-model-outputs.html#cb14-24"></a><span class="co">##  6 2019-02-17 00:00:00         0 T2m        1007  78.9 11.9  K     2019-02-17 00:00:00 00                          251.</span></span>
+<span id="cb14-25"><a href="interpolating-model-outputs.html#cb14-25"></a><span class="co">##  7 2019-02-17 00:00:00         0 T2m        1008  78.2 15.5  K     2019-02-17 00:00:00 00                          252.</span></span>
+<span id="cb14-26"><a href="interpolating-model-outputs.html#cb14-26"></a><span class="co">##  8 2019-02-17 00:00:00         0 T2m        1009  80.7 25.0  K     2019-02-17 00:00:00 00                          246.</span></span>
+<span id="cb14-27"><a href="interpolating-model-outputs.html#cb14-27"></a><span class="co">##  9 2019-02-17 00:00:00         0 T2m        1010  69.3 16.1  K     2019-02-17 00:00:00 00                          275.</span></span>
+<span id="cb14-28"><a href="interpolating-model-outputs.html#cb14-28"></a><span class="co">## 10 2019-02-17 00:00:00         0 T2m        1011  80.1 31.5  K     2019-02-17 00:00:00 00                          241.</span></span>
+<span id="cb14-29"><a href="interpolating-model-outputs.html#cb14-29"></a><span class="co">## # … with 16,786 more rows</span></span>
+<span id="cb14-30"><a href="interpolating-model-outputs.html#cb14-30"></a><span class="co">## </span></span>
+<span id="cb14-31"><a href="interpolating-model-outputs.html#cb14-31"></a><span class="co">## ● MEPS_prod</span></span>
+<span id="cb14-32"><a href="interpolating-model-outputs.html#cb14-32"></a><span class="co">## # A tibble: 78,132 x 10</span></span>
+<span id="cb14-33"><a href="interpolating-model-outputs.html#cb14-33"></a><span class="co">##    fcdate              lead_time parameter   SID   lat   lon units validdate           fcst_cycle MEPS_prod_det</span></span>
+<span id="cb14-34"><a href="interpolating-model-outputs.html#cb14-34"></a><span class="co">##    &lt;dttm&gt;                  &lt;dbl&gt; &lt;chr&gt;     &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt; &lt;dttm&gt;              &lt;chr&gt;              &lt;dbl&gt;</span></span>
+<span id="cb14-35"><a href="interpolating-model-outputs.html#cb14-35"></a><span class="co">##  1 2019-02-17 00:00:00         0 T2m        1001  70.9 -8.67 K     2019-02-17 00:00:00 00                  268.</span></span>
+<span id="cb14-36"><a href="interpolating-model-outputs.html#cb14-36"></a><span class="co">##  2 2019-02-17 00:00:00         0 T2m        1010  69.3 16.1  K     2019-02-17 00:00:00 00                  275.</span></span>
+<span id="cb14-37"><a href="interpolating-model-outputs.html#cb14-37"></a><span class="co">##  3 2019-02-17 00:00:00         0 T2m        1014  69.2 17.9  K     2019-02-17 00:00:00 00                  273.</span></span>
+<span id="cb14-38"><a href="interpolating-model-outputs.html#cb14-38"></a><span class="co">##  4 2019-02-17 00:00:00         0 T2m        1015  69.6 17.8  K     2019-02-17 00:00:00 00                  275.</span></span>
+<span id="cb14-39"><a href="interpolating-model-outputs.html#cb14-39"></a><span class="co">##  5 2019-02-17 00:00:00         0 T2m        1018  69.2 16.0  K     2019-02-17 00:00:00 00                  271.</span></span>
+<span id="cb14-40"><a href="interpolating-model-outputs.html#cb14-40"></a><span class="co">##  6 2019-02-17 00:00:00         0 T2m        1023  69.1 18.5  K     2019-02-17 00:00:00 00                  272.</span></span>
+<span id="cb14-41"><a href="interpolating-model-outputs.html#cb14-41"></a><span class="co">##  7 2019-02-17 00:00:00         0 T2m        1025  69.7 18.9  K     2019-02-17 00:00:00 00                  272.</span></span>
+<span id="cb14-42"><a href="interpolating-model-outputs.html#cb14-42"></a><span class="co">##  8 2019-02-17 00:00:00         0 T2m        1026  69.7 18.9  K     2019-02-17 00:00:00 00                  272.</span></span>
+<span id="cb14-43"><a href="interpolating-model-outputs.html#cb14-43"></a><span class="co">##  9 2019-02-17 00:00:00         0 T2m        1027  69.7 18.9  K     2019-02-17 00:00:00 00                  273.</span></span>
+<span id="cb14-44"><a href="interpolating-model-outputs.html#cb14-44"></a><span class="co">## 10 2019-02-17 00:00:00         0 T2m        1033  70.2 19.5  K     2019-02-17 00:00:00 00                  274.</span></span>
+<span id="cb14-45"><a href="interpolating-model-outputs.html#cb14-45"></a><span class="co">## # … with 78,122 more rows</span></span></code></pre></div>
+<p>If we want to write the data to sqlite files we need to tell it a path to write the data to. If the directories do not exist, they will be created. Let’s write the data to “data/FCTABLE”. We use FCTABLE as the directory name since in harp we refer to the SQLite files created by this process as FCTABLE files. We tell <code>read_forecast</code> that we want to output the data to files by setting <code>output_file_opts</code> to something. For SQLite files we can use the <code>sqlite_opts</code> function to set the options we need - usually you only need to set the path to the data using the <code>path</code> argument. Let’s get the vertical temperature profiles as well as the 2m temperature. You can see the parameter names that harp understands by running the function <code>show_harp_parameters</code></p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="interpolating-model-outputs.html#cb15-1"></a><span class="kw">show_harp_parameters</span>()</span>
+<span id="cb15-2"><a href="interpolating-model-outputs.html#cb15-2"></a><span class="co">## # A tibble: 21 x 2</span></span>
+<span id="cb15-3"><a href="interpolating-model-outputs.html#cb15-3"></a><span class="co">##    harp_parameter_name description                                                          </span></span>
+<span id="cb15-4"><a href="interpolating-model-outputs.html#cb15-4"></a><span class="co">##    &lt;chr&gt;               &lt;chr&gt;                                                                </span></span>
+<span id="cb15-5"><a href="interpolating-model-outputs.html#cb15-5"></a><span class="co">##  1 AccPcp12h           Accumulated precipitation over e.g. 12 hours                         </span></span>
+<span id="cb15-6"><a href="interpolating-model-outputs.html#cb15-6"></a><span class="co">##  2 Cbase               Height of cloud base                                                 </span></span>
+<span id="cb15-7"><a href="interpolating-model-outputs.html#cb15-7"></a><span class="co">##  3 CChigh              High level cloud cover                                               </span></span>
+<span id="cb15-8"><a href="interpolating-model-outputs.html#cb15-8"></a><span class="co">##  4 CClow               Low level cloud cover                                                </span></span>
+<span id="cb15-9"><a href="interpolating-model-outputs.html#cb15-9"></a><span class="co">##  5 CCmed               Medium level cloud cover                                             </span></span>
+<span id="cb15-10"><a href="interpolating-model-outputs.html#cb15-10"></a><span class="co">##  6 CCtot               Total cloud cover                                                    </span></span>
+<span id="cb15-11"><a href="interpolating-model-outputs.html#cb15-11"></a><span class="co">##  7 D10m                10m wind direction                                                   </span></span>
+<span id="cb15-12"><a href="interpolating-model-outputs.html#cb15-12"></a><span class="co">##  8 G10m                10m wind gust - period depends on input data                         </span></span>
+<span id="cb15-13"><a href="interpolating-model-outputs.html#cb15-13"></a><span class="co">##  9 Gmax                10m maximum wind gust - period depends on input data                 </span></span>
+<span id="cb15-14"><a href="interpolating-model-outputs.html#cb15-14"></a><span class="co">## 10 Pcp                 Precipitation direct from model - usually accumulated from start time</span></span>
+<span id="cb15-15"><a href="interpolating-model-outputs.html#cb15-15"></a><span class="co">## 11 Pmsl                Pressure at mean sea level                                           </span></span>
+<span id="cb15-16"><a href="interpolating-model-outputs.html#cb15-16"></a><span class="co">## 12 Ps                  Pressure at surface                                                  </span></span>
+<span id="cb15-17"><a href="interpolating-model-outputs.html#cb15-17"></a><span class="co">## 13 Q2m                 2m specific humidity                                                 </span></span>
+<span id="cb15-18"><a href="interpolating-model-outputs.html#cb15-18"></a><span class="co">## 14 RH2m                2m relative humidity                                                 </span></span>
+<span id="cb15-19"><a href="interpolating-model-outputs.html#cb15-19"></a><span class="co">## 15 S10m                10m wind speed                                                       </span></span>
+<span id="cb15-20"><a href="interpolating-model-outputs.html#cb15-20"></a><span class="co">## 16 Smax                Maximum 10m wind speed - period depends on input data                </span></span>
+<span id="cb15-21"><a href="interpolating-model-outputs.html#cb15-21"></a><span class="co">## 17 T2m                 2m temperature                                                       </span></span>
+<span id="cb15-22"><a href="interpolating-model-outputs.html#cb15-22"></a><span class="co">## 18 Td2m                2m dewpoint temperature                                              </span></span>
+<span id="cb15-23"><a href="interpolating-model-outputs.html#cb15-23"></a><span class="co">## 19 Tmax                Maximum 2m temperature                                               </span></span>
+<span id="cb15-24"><a href="interpolating-model-outputs.html#cb15-24"></a><span class="co">## 20 Tmin                Minimum 2m temperature                                               </span></span>
+<span id="cb15-25"><a href="interpolating-model-outputs.html#cb15-25"></a><span class="co">## 21 vis                 Horizontal visibility                                                </span></span>
+<span id="cb15-26"><a href="interpolating-model-outputs.html#cb15-26"></a><span class="co">## </span></span>
+<span id="cb15-27"><a href="interpolating-model-outputs.html#cb15-27"></a><span class="co">##  For upper air parameters, Z, T, RH, D, S, Q, and Td are available. Follow the</span></span>
+<span id="cb15-28"><a href="interpolating-model-outputs.html#cb15-28"></a><span class="co">##  letter with a number to denote pressure level, e.g. T850, S925, Z300 etc.</span></span></code></pre></div>
+<p>So the upper air parameter for temperture is T.</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="interpolating-model-outputs.html#cb16-1"></a><span class="kw">read_forecast</span>(</span>
+<span id="cb16-2"><a href="interpolating-model-outputs.html#cb16-2"></a>  <span class="dt">start_date       =</span> <span class="dv">2019021700</span>,           </span>
+<span id="cb16-3"><a href="interpolating-model-outputs.html#cb16-3"></a>  <span class="dt">end_date         =</span> <span class="dv">2019021718</span>,           </span>
+<span id="cb16-4"><a href="interpolating-model-outputs.html#cb16-4"></a>  <span class="dt">fcst_model       =</span> <span class="kw">c</span>(<span class="st">&quot;AROME_Arctic_prod&quot;</span>, <span class="st">&quot;MEPS_prod&quot;</span>),  </span>
+<span id="cb16-5"><a href="interpolating-model-outputs.html#cb16-5"></a>  <span class="dt">parameter        =</span> <span class="kw">c</span>(<span class="st">&quot;T2m&quot;</span>, <span class="st">&quot;T&quot;</span>),                </span>
+<span id="cb16-6"><a href="interpolating-model-outputs.html#cb16-6"></a>  <span class="dt">lead_time        =</span> <span class="kw">seq</span>(<span class="dv">0</span>, <span class="dv">48</span>, <span class="dv">3</span>),</span>
+<span id="cb16-7"><a href="interpolating-model-outputs.html#cb16-7"></a>  <span class="dt">by               =</span> <span class="st">&quot;6h&quot;</span>,                </span>
+<span id="cb16-8"><a href="interpolating-model-outputs.html#cb16-8"></a>  <span class="dt">file_path        =</span> <span class="kw">here</span>(<span class="st">&quot;data/vfld&quot;</span>),    </span>
+<span id="cb16-9"><a href="interpolating-model-outputs.html#cb16-9"></a>  <span class="dt">file_template    =</span> <span class="kw">list</span>(</span>
+<span id="cb16-10"><a href="interpolating-model-outputs.html#cb16-10"></a>    <span class="dt">AROME_Arctic_prod =</span> <span class="st">&quot;vfld&quot;</span>, </span>
+<span id="cb16-11"><a href="interpolating-model-outputs.html#cb16-11"></a>    <span class="dt">MEPS_prod         =</span> <span class="st">&quot;{fcst_model}/vfld{fcst_model}mbr000{YYYY}{MM}{DD}{HH}{LDT2}&quot;</span></span>
+<span id="cb16-12"><a href="interpolating-model-outputs.html#cb16-12"></a>  ),</span>
+<span id="cb16-13"><a href="interpolating-model-outputs.html#cb16-13"></a>  <span class="dt">output_file_opts =</span> <span class="kw">sqlite_opts</span>(<span class="dt">path =</span> <span class="kw">here</span>(<span class="st">&quot;data/FCTABLE/deterministic&quot;</span>))</span>
+<span id="cb16-14"><a href="interpolating-model-outputs.html#cb16-14"></a>)</span></code></pre></div>
+<p>The function tells you where the data were written to, but you can also look under the ./data/FCTABLE/deterministic directory and see for yourself. By default <code>read_forecast</code> uses the “fctable” template, but this can be changed using the <code>template</code> argument in <code>sqlite_opts</code>. However, you should always keep the parameter name in the template.</p>
+<p>There are a number of options in <code>read_forecast</code> that can be explored by looking at the help page for the function.</p>
+<p>Your turn:</p>
+<ul>
+<li>2m temperature is, by default, corrected for the difference in elevation between the model and observation site. Create sqlite files for uncorrected 2m temperature for AROME_Arctic_prod and MEPS_prod (member 0)</li>
+<li>Create sqlite files for 10m wind speed and dew point temperature for the upper air for AROME_Arctic_prod and MEPS_prod (member 0)</li>
+</ul>
+<p>Solutions</p>
+<ul>
+<li>Create sqlite files for uncorrected 2m temperature for AROME_Arctic_prod and MEPS_prod (member 0)</li>
+</ul>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="interpolating-model-outputs.html#cb17-1"></a><span class="kw">read_forecast</span>(</span>
+<span id="cb17-2"><a href="interpolating-model-outputs.html#cb17-2"></a>  <span class="dt">start_date          =</span> <span class="dv">2019021700</span>,           </span>
+<span id="cb17-3"><a href="interpolating-model-outputs.html#cb17-3"></a>  <span class="dt">end_date            =</span> <span class="dv">2019021718</span>,           </span>
+<span id="cb17-4"><a href="interpolating-model-outputs.html#cb17-4"></a>  <span class="dt">fcst_model          =</span> <span class="kw">c</span>(<span class="st">&quot;AROME_Arctic_prod&quot;</span>, <span class="st">&quot;MEPS_prod&quot;</span>),  </span>
+<span id="cb17-5"><a href="interpolating-model-outputs.html#cb17-5"></a>  <span class="dt">parameter           =</span> <span class="st">&quot;T2m&quot;</span>,                </span>
+<span id="cb17-6"><a href="interpolating-model-outputs.html#cb17-6"></a>  <span class="dt">lead_time           =</span> <span class="kw">seq</span>(<span class="dv">0</span>, <span class="dv">48</span>, <span class="dv">3</span>), </span>
+<span id="cb17-7"><a href="interpolating-model-outputs.html#cb17-7"></a>  <span class="dt">by                  =</span> <span class="st">&quot;6h&quot;</span>,                </span>
+<span id="cb17-8"><a href="interpolating-model-outputs.html#cb17-8"></a>  <span class="dt">file_path           =</span> <span class="kw">here</span>(<span class="st">&quot;data/vfld&quot;</span>),    </span>
+<span id="cb17-9"><a href="interpolating-model-outputs.html#cb17-9"></a>  <span class="dt">file_template       =</span> <span class="kw">list</span>(</span>
+<span id="cb17-10"><a href="interpolating-model-outputs.html#cb17-10"></a>    <span class="dt">AROME_Arctic_prod =</span> <span class="st">&quot;vfld&quot;</span>, </span>
+<span id="cb17-11"><a href="interpolating-model-outputs.html#cb17-11"></a>    <span class="dt">MEPS_prod         =</span> <span class="st">&quot;{fcst_model}/vfld{fcst_model}mbr000{YYYY}{MM}{DD}{HH}{LDT2}&quot;</span></span>
+<span id="cb17-12"><a href="interpolating-model-outputs.html#cb17-12"></a>  ),</span>
+<span id="cb17-13"><a href="interpolating-model-outputs.html#cb17-13"></a>  <span class="dt">output_file_opts    =</span> <span class="kw">sqlite_opts</span>(<span class="dt">path =</span> <span class="kw">here</span>(<span class="st">&quot;data/FCTABLE/deterministic&quot;</span>)),</span>
+<span id="cb17-14"><a href="interpolating-model-outputs.html#cb17-14"></a>  <span class="dt">transformation_opts =</span> <span class="kw">interpolate_opts</span>(<span class="dt">keep_model_t2m =</span> <span class="ot">TRUE</span>)</span>
+<span id="cb17-15"><a href="interpolating-model-outputs.html#cb17-15"></a>)</span></code></pre></div>
+<ul>
+<li>Create sqlite files for 10m wind speed and dew point temperature for the upper air for AROME_Arctic_prod and MEPS_prod (member 0)</li>
+</ul>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="interpolating-model-outputs.html#cb18-1"></a><span class="kw">read_forecast</span>(</span>
+<span id="cb18-2"><a href="interpolating-model-outputs.html#cb18-2"></a>  <span class="dt">start_date       =</span> <span class="dv">2019021700</span>,           </span>
+<span id="cb18-3"><a href="interpolating-model-outputs.html#cb18-3"></a>  <span class="dt">end_date         =</span> <span class="dv">2019021718</span>,           </span>
+<span id="cb18-4"><a href="interpolating-model-outputs.html#cb18-4"></a>  <span class="dt">fcst_model       =</span> <span class="kw">c</span>(<span class="st">&quot;AROME_Arctic_prod&quot;</span>, <span class="st">&quot;MEPS_prod&quot;</span>),  </span>
+<span id="cb18-5"><a href="interpolating-model-outputs.html#cb18-5"></a>  <span class="dt">parameter        =</span> <span class="kw">c</span>(<span class="st">&quot;S10m&quot;</span>, <span class="st">&quot;Td&quot;</span>),                </span>
+<span id="cb18-6"><a href="interpolating-model-outputs.html#cb18-6"></a>  <span class="dt">lead_time        =</span> <span class="kw">seq</span>(<span class="dv">0</span>, <span class="dv">48</span>, <span class="dv">3</span>),        </span>
+<span id="cb18-7"><a href="interpolating-model-outputs.html#cb18-7"></a>  <span class="dt">by               =</span> <span class="st">&quot;6h&quot;</span>,                </span>
+<span id="cb18-8"><a href="interpolating-model-outputs.html#cb18-8"></a>  <span class="dt">file_path        =</span> <span class="kw">here</span>(<span class="st">&quot;data/vfld&quot;</span>),    </span>
+<span id="cb18-9"><a href="interpolating-model-outputs.html#cb18-9"></a>  <span class="dt">file_template    =</span> <span class="kw">list</span>(</span>
+<span id="cb18-10"><a href="interpolating-model-outputs.html#cb18-10"></a>    <span class="dt">AROME_Arctic_prod =</span> <span class="st">&quot;vfld&quot;</span>, </span>
+<span id="cb18-11"><a href="interpolating-model-outputs.html#cb18-11"></a>    <span class="dt">MEPS_prod         =</span> <span class="st">&quot;{fcst_model}/vfld{fcst_model}mbr000{YYYY}{MM}{DD}{HH}{LDT2}&quot;</span></span>
+<span id="cb18-12"><a href="interpolating-model-outputs.html#cb18-12"></a>  ),</span>
+<span id="cb18-13"><a href="interpolating-model-outputs.html#cb18-13"></a>  <span class="dt">output_file_opts =</span>  <span class="kw">sqlite_opts</span>(<span class="dt">path =</span> <span class="kw">here</span>(<span class="st">&quot;data/FCTABLE/deterministic&quot;</span>))</span>
+<span id="cb18-14"><a href="interpolating-model-outputs.html#cb18-14"></a>)</span></code></pre></div>
+
+</div>
+<div id="ensemble-forecast-data" class="section level2">
+<h2><span class="header-section-number">2.4</span> Ensemble forecast data</h2>
+<p>The interpolation of EPS model data works in much the same way as for deterministic model data, using the <code>read_forecast</code> function. By adding the members argument, we tell <code>read_forecast</code> that we are reading ensemble data.</p>
+<div id="read-and-interpolate-2m-temperature" class="section level3">
+<h3><span class="header-section-number">2.4.1</span> Read and interpolate 2m temperature</h3>
+<p>As mentioned in the deterministic section, there are vfld files for MEPS in the data directory. There are 10 members numbered from 0 to 9, but we only have up to a lead time of 12 hours. As for the deterministic model, let’s first get the 2m temperature</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="interpolating-model-outputs.html#cb19-1"></a><span class="kw">library</span>(tidyverse)</span>
+<span id="cb19-2"><a href="interpolating-model-outputs.html#cb19-2"></a><span class="kw">library</span>(here)</span>
+<span id="cb19-3"><a href="interpolating-model-outputs.html#cb19-3"></a><span class="kw">library</span>(harpIO)</span>
+<span id="cb19-4"><a href="interpolating-model-outputs.html#cb19-4"></a></span>
+<span id="cb19-5"><a href="interpolating-model-outputs.html#cb19-5"></a><span class="kw">read_forecast</span>(</span>
+<span id="cb19-6"><a href="interpolating-model-outputs.html#cb19-6"></a>  <span class="dt">start_date    =</span> <span class="dv">2019021700</span>,           </span>
+<span id="cb19-7"><a href="interpolating-model-outputs.html#cb19-7"></a>  <span class="dt">end_date      =</span> <span class="dv">2019021718</span>,           </span>
+<span id="cb19-8"><a href="interpolating-model-outputs.html#cb19-8"></a>  <span class="dt">fcst_model    =</span> <span class="kw">c</span>(<span class="st">&quot;MEPS_prod&quot;</span>),  </span>
+<span id="cb19-9"><a href="interpolating-model-outputs.html#cb19-9"></a>  <span class="dt">parameter     =</span> <span class="st">&quot;T2m&quot;</span>,                </span>
+<span id="cb19-10"><a href="interpolating-model-outputs.html#cb19-10"></a>  <span class="dt">lead_time     =</span> <span class="kw">seq</span>(<span class="dv">0</span>, <span class="dv">12</span>, <span class="dv">3</span>), </span>
+<span id="cb19-11"><a href="interpolating-model-outputs.html#cb19-11"></a>  <span class="dt">members       =</span> <span class="kw">seq</span>(<span class="dv">0</span>, <span class="dv">9</span>), </span>
+<span id="cb19-12"><a href="interpolating-model-outputs.html#cb19-12"></a>  <span class="dt">by            =</span> <span class="st">&quot;6h&quot;</span>,                </span>
+<span id="cb19-13"><a href="interpolating-model-outputs.html#cb19-13"></a>  <span class="dt">file_path     =</span> <span class="kw">here</span>(<span class="st">&quot;data/vfld&quot;</span>),    </span>
+<span id="cb19-14"><a href="interpolating-model-outputs.html#cb19-14"></a>  <span class="dt">file_template =</span> <span class="st">&quot;vfld_eps&quot;</span>,</span>
+<span id="cb19-15"><a href="interpolating-model-outputs.html#cb19-15"></a>  <span class="dt">return_data   =</span> <span class="ot">TRUE</span>                  </span>
+<span id="cb19-16"><a href="interpolating-model-outputs.html#cb19-16"></a>)</span>
+<span id="cb19-17"><a href="interpolating-model-outputs.html#cb19-17"></a><span class="co">## ● MEPS_prod</span></span>
+<span id="cb19-18"><a href="interpolating-model-outputs.html#cb19-18"></a><span class="co">## # A tibble: 22,980 x 19</span></span>
+<span id="cb19-19"><a href="interpolating-model-outputs.html#cb19-19"></a><span class="co">##    fcdate              lead_time parameter   SID   lat   lon units validdate           fcst_cycle MEPS_prod_mbr000</span></span>
+<span id="cb19-20"><a href="interpolating-model-outputs.html#cb19-20"></a><span class="co">##    &lt;dttm&gt;                  &lt;dbl&gt; &lt;chr&gt;     &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt; &lt;dttm&gt;              &lt;chr&gt;                 &lt;dbl&gt;</span></span>
+<span id="cb19-21"><a href="interpolating-model-outputs.html#cb19-21"></a><span class="co">##  1 2019-02-17 00:00:00         0 T2m        1001  70.9 -8.67 K     2019-02-17 00:00:00 00                     268.</span></span>
+<span id="cb19-22"><a href="interpolating-model-outputs.html#cb19-22"></a><span class="co">##  2 2019-02-17 00:00:00         0 T2m        1010  69.3 16.1  K     2019-02-17 00:00:00 00                     275.</span></span>
+<span id="cb19-23"><a href="interpolating-model-outputs.html#cb19-23"></a><span class="co">##  3 2019-02-17 00:00:00         0 T2m        1014  69.2 17.9  K     2019-02-17 00:00:00 00                     273.</span></span>
+<span id="cb19-24"><a href="interpolating-model-outputs.html#cb19-24"></a><span class="co">##  4 2019-02-17 00:00:00         0 T2m        1015  69.6 17.8  K     2019-02-17 00:00:00 00                     275.</span></span>
+<span id="cb19-25"><a href="interpolating-model-outputs.html#cb19-25"></a><span class="co">##  5 2019-02-17 00:00:00         0 T2m        1018  69.2 16.0  K     2019-02-17 00:00:00 00                     271.</span></span>
+<span id="cb19-26"><a href="interpolating-model-outputs.html#cb19-26"></a><span class="co">##  6 2019-02-17 00:00:00         0 T2m        1023  69.1 18.5  K     2019-02-17 00:00:00 00                     272.</span></span>
+<span id="cb19-27"><a href="interpolating-model-outputs.html#cb19-27"></a><span class="co">##  7 2019-02-17 00:00:00         0 T2m        1025  69.7 18.9  K     2019-02-17 00:00:00 00                     272.</span></span>
+<span id="cb19-28"><a href="interpolating-model-outputs.html#cb19-28"></a><span class="co">##  8 2019-02-17 00:00:00         0 T2m        1026  69.7 18.9  K     2019-02-17 00:00:00 00                     272.</span></span>
+<span id="cb19-29"><a href="interpolating-model-outputs.html#cb19-29"></a><span class="co">##  9 2019-02-17 00:00:00         0 T2m        1027  69.7 18.9  K     2019-02-17 00:00:00 00                     273.</span></span>
+<span id="cb19-30"><a href="interpolating-model-outputs.html#cb19-30"></a><span class="co">## 10 2019-02-17 00:00:00         0 T2m        1033  70.2 19.5  K     2019-02-17 00:00:00 00                     274.</span></span>
+<span id="cb19-31"><a href="interpolating-model-outputs.html#cb19-31"></a><span class="co">## # … with 22,970 more rows, and 9 more variables: MEPS_prod_mbr001 &lt;dbl&gt;, MEPS_prod_mbr002 &lt;dbl&gt;, MEPS_prod_mbr003 &lt;dbl&gt;,</span></span>
+<span id="cb19-32"><a href="interpolating-model-outputs.html#cb19-32"></a><span class="co">## #   MEPS_prod_mbr004 &lt;dbl&gt;, MEPS_prod_mbr005 &lt;dbl&gt;, MEPS_prod_mbr006 &lt;dbl&gt;, MEPS_prod_mbr007 &lt;dbl&gt;,</span></span>
+<span id="cb19-33"><a href="interpolating-model-outputs.html#cb19-33"></a><span class="co">## #   MEPS_prod_mbr008 &lt;dbl&gt;, MEPS_prod_mbr009 &lt;dbl&gt;</span></span></code></pre></div>
+<p>You will see that there are a few extra columns in the data. There is both fcst_model and sub_model. This is in case we are dealing with a multi model ensemble. There is also a column for member, and members_out. This is if you want to renumber the members for the sqlite files. Finally there is a lag column. This has information for lagged ensembles.</p>
+<p>Let’s now try reading two models - the AROME_Arctic_prod deterministic model and the MEPS_prod ensemble. But how do we specify the members for more than one model? In this case we use a named list, with one element of the list for each model - and we can do the same for the file template. By setting the members to NA for AROME_Arctic_prod we tell read_forecast that it is deterministic - you could also set it to a numeric value and it would treat the AROME_Arctic_prod as a single member ensemble. We’ll just take the first 3 members from MEPS_prod for speed.</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="interpolating-model-outputs.html#cb20-1"></a><span class="kw">read_forecast</span>(</span>
+<span id="cb20-2"><a href="interpolating-model-outputs.html#cb20-2"></a>  <span class="dt">start_date    =</span> <span class="dv">2019021700</span>,           </span>
+<span id="cb20-3"><a href="interpolating-model-outputs.html#cb20-3"></a>  <span class="dt">end_date      =</span> <span class="dv">2019021718</span>,           </span>
+<span id="cb20-4"><a href="interpolating-model-outputs.html#cb20-4"></a>  <span class="dt">fcst_model    =</span> <span class="kw">c</span>(<span class="st">&quot;MEPS_prod&quot;</span>, <span class="st">&quot;AROME_Arctic_prod&quot;</span>),  </span>
+<span id="cb20-5"><a href="interpolating-model-outputs.html#cb20-5"></a>  <span class="dt">parameter     =</span> <span class="st">&quot;T2m&quot;</span>,                </span>
+<span id="cb20-6"><a href="interpolating-model-outputs.html#cb20-6"></a>  <span class="dt">lead_time     =</span> <span class="kw">seq</span>(<span class="dv">0</span>, <span class="dv">12</span>, <span class="dv">3</span>), </span>
+<span id="cb20-7"><a href="interpolating-model-outputs.html#cb20-7"></a>  <span class="dt">members       =</span> <span class="kw">list</span>(<span class="dt">MEPS_prod =</span> <span class="kw">seq</span>(<span class="dv">0</span>, <span class="dv">2</span>), <span class="dt">AROME_Arctic_prod =</span> <span class="ot">NA</span>), </span>
+<span id="cb20-8"><a href="interpolating-model-outputs.html#cb20-8"></a>  <span class="dt">by            =</span> <span class="st">&quot;6h&quot;</span>,                </span>
+<span id="cb20-9"><a href="interpolating-model-outputs.html#cb20-9"></a>  <span class="dt">file_path     =</span> <span class="kw">here</span>(<span class="st">&quot;data/vfld&quot;</span>),    </span>
+<span id="cb20-10"><a href="interpolating-model-outputs.html#cb20-10"></a>  <span class="dt">file_template =</span> <span class="kw">list</span>(<span class="dt">MEPS_prod =</span> <span class="st">&quot;vfld_eps&quot;</span>, <span class="dt">AROME_Arctic_prod =</span> <span class="st">&quot;vfld&quot;</span>),</span>
+<span id="cb20-11"><a href="interpolating-model-outputs.html#cb20-11"></a>  <span class="dt">return_data   =</span> <span class="ot">TRUE</span>                  </span>
+<span id="cb20-12"><a href="interpolating-model-outputs.html#cb20-12"></a>)</span>
+<span id="cb20-13"><a href="interpolating-model-outputs.html#cb20-13"></a><span class="co">## ● AROME_Arctic_prod</span></span>
+<span id="cb20-14"><a href="interpolating-model-outputs.html#cb20-14"></a><span class="co">## # A tibble: 4,940 x 10</span></span>
+<span id="cb20-15"><a href="interpolating-model-outputs.html#cb20-15"></a><span class="co">##    fcdate              lead_time parameter   SID   lat   lon units validdate           fcst_cycle AROME_Arctic_prod_det</span></span>
+<span id="cb20-16"><a href="interpolating-model-outputs.html#cb20-16"></a><span class="co">##    &lt;dttm&gt;                  &lt;dbl&gt; &lt;chr&gt;     &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt; &lt;dttm&gt;              &lt;chr&gt;                      &lt;dbl&gt;</span></span>
+<span id="cb20-17"><a href="interpolating-model-outputs.html#cb20-17"></a><span class="co">##  1 2019-02-17 00:00:00         0 T2m        1001  70.9 -8.67 K     2019-02-17 00:00:00 00                          270.</span></span>
+<span id="cb20-18"><a href="interpolating-model-outputs.html#cb20-18"></a><span class="co">##  2 2019-02-17 00:00:00         0 T2m        1002  80.1 16.2  K     2019-02-17 00:00:00 00                          250.</span></span>
+<span id="cb20-19"><a href="interpolating-model-outputs.html#cb20-19"></a><span class="co">##  3 2019-02-17 00:00:00         0 T2m        1003  77   15.5  K     2019-02-17 00:00:00 00                          253.</span></span>
+<span id="cb20-20"><a href="interpolating-model-outputs.html#cb20-20"></a><span class="co">##  4 2019-02-17 00:00:00         0 T2m        1004  78.9 11.9  K     2019-02-17 00:00:00 00                          251.</span></span>
+<span id="cb20-21"><a href="interpolating-model-outputs.html#cb20-21"></a><span class="co">##  5 2019-02-17 00:00:00         0 T2m        1006  78.3 22.8  K     2019-02-17 00:00:00 00                          244.</span></span>
+<span id="cb20-22"><a href="interpolating-model-outputs.html#cb20-22"></a><span class="co">##  6 2019-02-17 00:00:00         0 T2m        1007  78.9 11.9  K     2019-02-17 00:00:00 00                          251.</span></span>
+<span id="cb20-23"><a href="interpolating-model-outputs.html#cb20-23"></a><span class="co">##  7 2019-02-17 00:00:00         0 T2m        1008  78.2 15.5  K     2019-02-17 00:00:00 00                          252.</span></span>
+<span id="cb20-24"><a href="interpolating-model-outputs.html#cb20-24"></a><span class="co">##  8 2019-02-17 00:00:00         0 T2m        1009  80.7 25.0  K     2019-02-17 00:00:00 00                          246.</span></span>
+<span id="cb20-25"><a href="interpolating-model-outputs.html#cb20-25"></a><span class="co">##  9 2019-02-17 00:00:00         0 T2m        1010  69.3 16.1  K     2019-02-17 00:00:00 00                          275.</span></span>
+<span id="cb20-26"><a href="interpolating-model-outputs.html#cb20-26"></a><span class="co">## 10 2019-02-17 00:00:00         0 T2m        1011  80.1 31.5  K     2019-02-17 00:00:00 00                          241.</span></span>
+<span id="cb20-27"><a href="interpolating-model-outputs.html#cb20-27"></a><span class="co">## # … with 4,930 more rows</span></span>
+<span id="cb20-28"><a href="interpolating-model-outputs.html#cb20-28"></a><span class="co">## </span></span>
+<span id="cb20-29"><a href="interpolating-model-outputs.html#cb20-29"></a><span class="co">## ● MEPS_prod</span></span>
+<span id="cb20-30"><a href="interpolating-model-outputs.html#cb20-30"></a><span class="co">## # A tibble: 22,980 x 12</span></span>
+<span id="cb20-31"><a href="interpolating-model-outputs.html#cb20-31"></a><span class="co">##    fcdate              lead_time parameter   SID   lat   lon units validdate           fcst_cycle MEPS_prod_mbr000</span></span>
+<span id="cb20-32"><a href="interpolating-model-outputs.html#cb20-32"></a><span class="co">##    &lt;dttm&gt;                  &lt;dbl&gt; &lt;chr&gt;     &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt; &lt;dttm&gt;              &lt;chr&gt;                 &lt;dbl&gt;</span></span>
+<span id="cb20-33"><a href="interpolating-model-outputs.html#cb20-33"></a><span class="co">##  1 2019-02-17 00:00:00         0 T2m        1001  70.9 -8.67 K     2019-02-17 00:00:00 00                     268.</span></span>
+<span id="cb20-34"><a href="interpolating-model-outputs.html#cb20-34"></a><span class="co">##  2 2019-02-17 00:00:00         0 T2m        1010  69.3 16.1  K     2019-02-17 00:00:00 00                     275.</span></span>
+<span id="cb20-35"><a href="interpolating-model-outputs.html#cb20-35"></a><span class="co">##  3 2019-02-17 00:00:00         0 T2m        1014  69.2 17.9  K     2019-02-17 00:00:00 00                     273.</span></span>
+<span id="cb20-36"><a href="interpolating-model-outputs.html#cb20-36"></a><span class="co">##  4 2019-02-17 00:00:00         0 T2m        1015  69.6 17.8  K     2019-02-17 00:00:00 00                     275.</span></span>
+<span id="cb20-37"><a href="interpolating-model-outputs.html#cb20-37"></a><span class="co">##  5 2019-02-17 00:00:00         0 T2m        1018  69.2 16.0  K     2019-02-17 00:00:00 00                     271.</span></span>
+<span id="cb20-38"><a href="interpolating-model-outputs.html#cb20-38"></a><span class="co">##  6 2019-02-17 00:00:00         0 T2m        1023  69.1 18.5  K     2019-02-17 00:00:00 00                     272.</span></span>
+<span id="cb20-39"><a href="interpolating-model-outputs.html#cb20-39"></a><span class="co">##  7 2019-02-17 00:00:00         0 T2m        1025  69.7 18.9  K     2019-02-17 00:00:00 00                     272.</span></span>
+<span id="cb20-40"><a href="interpolating-model-outputs.html#cb20-40"></a><span class="co">##  8 2019-02-17 00:00:00         0 T2m        1026  69.7 18.9  K     2019-02-17 00:00:00 00                     272.</span></span>
+<span id="cb20-41"><a href="interpolating-model-outputs.html#cb20-41"></a><span class="co">##  9 2019-02-17 00:00:00         0 T2m        1027  69.7 18.9  K     2019-02-17 00:00:00 00                     273.</span></span>
+<span id="cb20-42"><a href="interpolating-model-outputs.html#cb20-42"></a><span class="co">## 10 2019-02-17 00:00:00         0 T2m        1033  70.2 19.5  K     2019-02-17 00:00:00 00                     274.</span></span>
+<span id="cb20-43"><a href="interpolating-model-outputs.html#cb20-43"></a><span class="co">## # … with 22,970 more rows, and 2 more variables: MEPS_prod_mbr001 &lt;dbl&gt;, MEPS_prod_mbr002 &lt;dbl&gt;</span></span></code></pre></div>
+<p>We could also generate a multimodel ensemble. Here we use a named nested list for members and a named list for fcst_model. Note also that we have to set custom template for AROME_Arctic_prod since for multimodel ensembles to work, {sub_model} needs to be a part of the file template.</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="interpolating-model-outputs.html#cb21-1"></a><span class="kw">read_forecast</span>(</span>
+<span id="cb21-2"><a href="interpolating-model-outputs.html#cb21-2"></a>  <span class="dt">start_date        =</span> <span class="dv">2019021700</span>,           </span>
+<span id="cb21-3"><a href="interpolating-model-outputs.html#cb21-3"></a>  <span class="dt">end_date          =</span> <span class="dv">2019021718</span>,           </span>
+<span id="cb21-4"><a href="interpolating-model-outputs.html#cb21-4"></a>  <span class="dt">fcst_model        =</span> <span class="kw">list</span>(<span class="dt">awesome_multimodel_eps =</span> <span class="kw">c</span>(<span class="st">&quot;MEPS_prod&quot;</span>, <span class="st">&quot;AROME_Arctic_prod&quot;</span>)),  </span>
+<span id="cb21-5"><a href="interpolating-model-outputs.html#cb21-5"></a>  <span class="dt">parameter         =</span> <span class="st">&quot;T2m&quot;</span>,                </span>
+<span id="cb21-6"><a href="interpolating-model-outputs.html#cb21-6"></a>  <span class="dt">lead_time         =</span> <span class="kw">seq</span>(<span class="dv">0</span>, <span class="dv">12</span>, <span class="dv">3</span>), </span>
+<span id="cb21-7"><a href="interpolating-model-outputs.html#cb21-7"></a>  <span class="dt">members           =</span> <span class="kw">list</span>(<span class="dt">awesome_multimodel_eps =</span> <span class="kw">list</span>(<span class="dt">MEPS_prod =</span> <span class="kw">seq</span>(<span class="dv">0</span>, <span class="dv">2</span>), <span class="dt">AROME_Arctic_prod =</span> <span class="dv">0</span>)), </span>
+<span id="cb21-8"><a href="interpolating-model-outputs.html#cb21-8"></a>  <span class="dt">by                =</span> <span class="st">&quot;6h&quot;</span>,                </span>
+<span id="cb21-9"><a href="interpolating-model-outputs.html#cb21-9"></a>  <span class="dt">file_path         =</span> <span class="kw">here</span>(<span class="st">&quot;data/vfld&quot;</span>),    </span>
+<span id="cb21-10"><a href="interpolating-model-outputs.html#cb21-10"></a>  <span class="dt">file_template     =</span> <span class="kw">list</span>(</span>
+<span id="cb21-11"><a href="interpolating-model-outputs.html#cb21-11"></a>    <span class="dt">awesome_mutlimodel_eps =</span> <span class="kw">list</span>(</span>
+<span id="cb21-12"><a href="interpolating-model-outputs.html#cb21-12"></a>      <span class="dt">MEPS_prod         =</span> <span class="st">&quot;vfld_multimodel&quot;</span>, </span>
+<span id="cb21-13"><a href="interpolating-model-outputs.html#cb21-13"></a>      <span class="dt">AROME_Arctic_prod =</span> <span class="st">&quot;{sub_model}/vfld{sub_model}{YYYY}{MM}{DD}{HH}{LDT2}&quot;</span></span>
+<span id="cb21-14"><a href="interpolating-model-outputs.html#cb21-14"></a>    )</span>
+<span id="cb21-15"><a href="interpolating-model-outputs.html#cb21-15"></a>  ),</span>
+<span id="cb21-16"><a href="interpolating-model-outputs.html#cb21-16"></a>  <span class="dt">return_data       =</span> <span class="ot">TRUE</span>, </span>
+<span id="cb21-17"><a href="interpolating-model-outputs.html#cb21-17"></a>)</span>
+<span id="cb21-18"><a href="interpolating-model-outputs.html#cb21-18"></a><span class="co">## ● awesome_multimodel_eps</span></span>
+<span id="cb21-19"><a href="interpolating-model-outputs.html#cb21-19"></a><span class="co">## # A tibble: 23,340 x 13</span></span>
+<span id="cb21-20"><a href="interpolating-model-outputs.html#cb21-20"></a><span class="co">##    fcdate              lead_time parameter   SID   lat   lon units validdate           fcst_cycle AROME_Arctic_pr…</span></span>
+<span id="cb21-21"><a href="interpolating-model-outputs.html#cb21-21"></a><span class="co">##    &lt;dttm&gt;                  &lt;dbl&gt; &lt;chr&gt;     &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt; &lt;dttm&gt;              &lt;chr&gt;                 &lt;dbl&gt;</span></span>
+<span id="cb21-22"><a href="interpolating-model-outputs.html#cb21-22"></a><span class="co">##  1 2019-02-17 00:00:00         0 T2m        1001  70.9 -8.67 K     2019-02-17 00:00:00 00                     270.</span></span>
+<span id="cb21-23"><a href="interpolating-model-outputs.html#cb21-23"></a><span class="co">##  2 2019-02-17 00:00:00         0 T2m        1010  69.3 16.1  K     2019-02-17 00:00:00 00                     275.</span></span>
+<span id="cb21-24"><a href="interpolating-model-outputs.html#cb21-24"></a><span class="co">##  3 2019-02-17 00:00:00         0 T2m        1014  69.2 17.9  K     2019-02-17 00:00:00 00                     273.</span></span>
+<span id="cb21-25"><a href="interpolating-model-outputs.html#cb21-25"></a><span class="co">##  4 2019-02-17 00:00:00         0 T2m        1015  69.6 17.8  K     2019-02-17 00:00:00 00                     274.</span></span>
+<span id="cb21-26"><a href="interpolating-model-outputs.html#cb21-26"></a><span class="co">##  5 2019-02-17 00:00:00         0 T2m        1018  69.2 16.0  K     2019-02-17 00:00:00 00                     271.</span></span>
+<span id="cb21-27"><a href="interpolating-model-outputs.html#cb21-27"></a><span class="co">##  6 2019-02-17 00:00:00         0 T2m        1023  69.1 18.5  K     2019-02-17 00:00:00 00                     272.</span></span>
+<span id="cb21-28"><a href="interpolating-model-outputs.html#cb21-28"></a><span class="co">##  7 2019-02-17 00:00:00         0 T2m        1025  69.7 18.9  K     2019-02-17 00:00:00 00                     272.</span></span>
+<span id="cb21-29"><a href="interpolating-model-outputs.html#cb21-29"></a><span class="co">##  8 2019-02-17 00:00:00         0 T2m        1026  69.7 18.9  K     2019-02-17 00:00:00 00                     272.</span></span>
+<span id="cb21-30"><a href="interpolating-model-outputs.html#cb21-30"></a><span class="co">##  9 2019-02-17 00:00:00         0 T2m        1027  69.7 18.9  K     2019-02-17 00:00:00 00                     273.</span></span>
+<span id="cb21-31"><a href="interpolating-model-outputs.html#cb21-31"></a><span class="co">## 10 2019-02-17 00:00:00         0 T2m        1033  70.2 19.5  K     2019-02-17 00:00:00 00                     273.</span></span>
+<span id="cb21-32"><a href="interpolating-model-outputs.html#cb21-32"></a><span class="co">## # … with 23,330 more rows, and 3 more variables: MEPS_prod_mbr000 &lt;dbl&gt;, MEPS_prod_mbr001 &lt;dbl&gt;, MEPS_prod_mbr002 &lt;dbl&gt;</span></span></code></pre></div>
+<p>You will see that the members are named differently for each of the models in the ensemble. You can also use the <code>split_multimodel</code> function to separate out each of the sub models into their own data frames in the harp_fcst list.</p>
+<p>Your turn:</p>
+<ul>
+<li>Create sqlite files for all members of MEPS_prod for lead times 0, 3, 6, 9 and 12 for 2m temperature (both corrected and uncorrected), 10m wind speed and temperature and dew point temperature for the upper air.</li>
+<li>Make a multimodel ensemble with members 0-5 of MEPS_prod and AROME_Arctic_prod as a single member ensemble and write out the output to sqlite files for the same lead times and parameters as above. Note that to ensure unique rows in the sqlite files we cannot write out the model elevation. See <code>?sqlite_opts</code> for how to control this behaviour.</li>
+</ul>
+<p>Solutions</p>
+<ul>
+<li>Create sqlite files for all members of MEPS_prod for lead times 0, 3, 6, 9 and 12 for 2m temperature (both corrected and uncorrected), 10m wind speed and temperature and dew point temperature for the upper air.</li>
+</ul>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="interpolating-model-outputs.html#cb22-1"></a><span class="kw">read_forecast</span>(</span>
+<span id="cb22-2"><a href="interpolating-model-outputs.html#cb22-2"></a>  <span class="dt">start_date          =</span> <span class="dv">2019021700</span>,           </span>
+<span id="cb22-3"><a href="interpolating-model-outputs.html#cb22-3"></a>  <span class="dt">end_date            =</span> <span class="dv">2019021718</span>,           </span>
+<span id="cb22-4"><a href="interpolating-model-outputs.html#cb22-4"></a>  <span class="dt">fcst_model          =</span> <span class="st">&quot;MEPS_prod&quot;</span>,  </span>
+<span id="cb22-5"><a href="interpolating-model-outputs.html#cb22-5"></a>  <span class="dt">parameter           =</span> <span class="kw">c</span>(<span class="st">&quot;T2m&quot;</span>, <span class="st">&quot;S10m&quot;</span>, <span class="st">&quot;T&quot;</span>, <span class="st">&quot;Td&quot;</span>),                </span>
+<span id="cb22-6"><a href="interpolating-model-outputs.html#cb22-6"></a>  <span class="dt">lead_time           =</span> <span class="kw">seq</span>(<span class="dv">0</span>, <span class="dv">12</span>, <span class="dv">3</span>), </span>
+<span id="cb22-7"><a href="interpolating-model-outputs.html#cb22-7"></a>  <span class="dt">members             =</span> <span class="kw">seq</span>(<span class="dv">0</span>, <span class="dv">9</span>), </span>
+<span id="cb22-8"><a href="interpolating-model-outputs.html#cb22-8"></a>  <span class="dt">by                  =</span> <span class="st">&quot;6h&quot;</span>,                </span>
+<span id="cb22-9"><a href="interpolating-model-outputs.html#cb22-9"></a>  <span class="dt">file_path           =</span> <span class="kw">here</span>(<span class="st">&quot;data/vfld&quot;</span>),    </span>
+<span id="cb22-10"><a href="interpolating-model-outputs.html#cb22-10"></a>  <span class="dt">file_template       =</span> <span class="st">&quot;vfld_eps&quot;</span>,</span>
+<span id="cb22-11"><a href="interpolating-model-outputs.html#cb22-11"></a>  <span class="dt">transformation_opts =</span> <span class="kw">interpolate_opts</span>(<span class="dt">keep_model_t2m =</span> <span class="ot">TRUE</span>),</span>
+<span id="cb22-12"><a href="interpolating-model-outputs.html#cb22-12"></a>  <span class="dt">output_file_opts    =</span> <span class="kw">sqlite_opts</span>(<span class="dt">path =</span> <span class="kw">here</span>(<span class="st">&quot;data/FCTABLE/ensemble&quot;</span>))</span>
+<span id="cb22-13"><a href="interpolating-model-outputs.html#cb22-13"></a>)</span></code></pre></div>
+<ul>
+<li>Make a multimodel ensemble with members 0-5 of MEPS_prod and AROME_Arctic_prod and write out the output to sqlite files for the same lead times and parameters as above.</li>
+</ul>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="interpolating-model-outputs.html#cb23-1"></a><span class="kw">read_forecast</span>(</span>
+<span id="cb23-2"><a href="interpolating-model-outputs.html#cb23-2"></a>  <span class="dt">start_date        =</span> <span class="dv">2019021700</span>,           </span>
+<span id="cb23-3"><a href="interpolating-model-outputs.html#cb23-3"></a>  <span class="dt">end_date          =</span> <span class="dv">2019021718</span>,           </span>
+<span id="cb23-4"><a href="interpolating-model-outputs.html#cb23-4"></a>  <span class="dt">fcst_model        =</span> <span class="kw">list</span>(<span class="dt">awesome_multimodel_eps =</span> <span class="kw">c</span>(<span class="st">&quot;MEPS_prod&quot;</span>, <span class="st">&quot;AROME_Arctic_prod&quot;</span>)),  </span>
+<span id="cb23-5"><a href="interpolating-model-outputs.html#cb23-5"></a>  <span class="dt">parameter         =</span> <span class="kw">c</span>(<span class="st">&quot;T2m&quot;</span>, <span class="st">&quot;S10m&quot;</span>, <span class="st">&quot;T&quot;</span>, <span class="st">&quot;Td&quot;</span>),                </span>
+<span id="cb23-6"><a href="interpolating-model-outputs.html#cb23-6"></a>  <span class="dt">lead_time         =</span> <span class="kw">seq</span>(<span class="dv">0</span>, <span class="dv">12</span>, <span class="dv">3</span>), </span>
+<span id="cb23-7"><a href="interpolating-model-outputs.html#cb23-7"></a>  <span class="dt">members           =</span> <span class="kw">list</span>(<span class="dt">awesome_multimodel_eps =</span> <span class="kw">list</span>(<span class="dt">MEPS_prod =</span> <span class="kw">seq</span>(<span class="dv">0</span>, <span class="dv">2</span>), <span class="dt">AROME_Arctic_prod =</span> <span class="dv">0</span>)), </span>
+<span id="cb23-8"><a href="interpolating-model-outputs.html#cb23-8"></a>  <span class="dt">by                =</span> <span class="st">&quot;6h&quot;</span>,                </span>
+<span id="cb23-9"><a href="interpolating-model-outputs.html#cb23-9"></a>  <span class="dt">file_path         =</span> <span class="kw">here</span>(<span class="st">&quot;data/vfld&quot;</span>),    </span>
+<span id="cb23-10"><a href="interpolating-model-outputs.html#cb23-10"></a>  <span class="dt">file_template     =</span> <span class="kw">list</span>(</span>
+<span id="cb23-11"><a href="interpolating-model-outputs.html#cb23-11"></a>    <span class="dt">awesome_multimodel_eps =</span> <span class="kw">list</span>(</span>
+<span id="cb23-12"><a href="interpolating-model-outputs.html#cb23-12"></a>      <span class="dt">MEPS_prod         =</span> <span class="st">&quot;vfld_multimodel&quot;</span>,</span>
+<span id="cb23-13"><a href="interpolating-model-outputs.html#cb23-13"></a>      <span class="dt">AROME_Arctic_prod =</span> <span class="st">&quot;{sub_model}/vfld{sub_model}{YYYY}{MM}{DD}{HH}{LDT2}&quot;</span></span>
+<span id="cb23-14"><a href="interpolating-model-outputs.html#cb23-14"></a>    )</span>
+<span id="cb23-15"><a href="interpolating-model-outputs.html#cb23-15"></a>  ),</span>
+<span id="cb23-16"><a href="interpolating-model-outputs.html#cb23-16"></a>  <span class="dt">transformation_opts =</span> <span class="kw">interpolate_opts</span>(<span class="dt">keep_model_t2m =</span> <span class="ot">TRUE</span>),</span>
+<span id="cb23-17"><a href="interpolating-model-outputs.html#cb23-17"></a>  <span class="dt">output_file_opts    =</span> <span class="kw">sqlite_opts</span>(<span class="dt">path =</span> <span class="kw">here</span>(<span class="st">&quot;data/FCTABLE/ensemble&quot;</span>), <span class="dt">remove_model_elev =</span> <span class="ot">TRUE</span>)</span>
+<span id="cb23-18"><a href="interpolating-model-outputs.html#cb23-18"></a>)</span></code></pre></div>
+</div>
+<div id="lagged-ensembles" class="section level3">
+<h3><span class="header-section-number">2.4.2</span> Lagged ensembles</h3>
+<p>In a number of Hirlam institutes (MetCoOp and DMI) “continuous” ensembles are being run. With these a small number of members are run each hour and the full ensemble is constructed by lagging these hourly members. In MetCoOp this ensemble is known as CMEPS and is currently running in test mode. We have some vfld files for CMEPS_prod in the data directory for the same dates as the other modelling systems. Each member runs every three hours, with members 1 and 2 at 00, 03…, 21; members 5 and 6 at 01, 04…, 22; and members 3 and 4 at 02, 05…, 23. To construct the ensemble for 03, we need members from 03, 02 and 01. We specifiy what lags we need as a named list that is the same length as the members argument.</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="interpolating-model-outputs.html#cb24-1"></a><span class="kw">read_forecast</span>(</span>
+<span id="cb24-2"><a href="interpolating-model-outputs.html#cb24-2"></a>  <span class="dt">start_date    =</span> <span class="dv">2019021700</span>,           </span>
+<span id="cb24-3"><a href="interpolating-model-outputs.html#cb24-3"></a>  <span class="dt">end_date      =</span> <span class="dv">2019021718</span>,           </span>
+<span id="cb24-4"><a href="interpolating-model-outputs.html#cb24-4"></a>  <span class="dt">fcst_model    =</span> <span class="st">&quot;CMEPS_prod&quot;</span>, </span>
+<span id="cb24-5"><a href="interpolating-model-outputs.html#cb24-5"></a>  <span class="dt">parameter     =</span> <span class="st">&quot;T2m&quot;</span>,                </span>
+<span id="cb24-6"><a href="interpolating-model-outputs.html#cb24-6"></a>  <span class="dt">lead_time     =</span> <span class="kw">seq</span>(<span class="dv">0</span>, <span class="dv">12</span>, <span class="dv">3</span>), </span>
+<span id="cb24-7"><a href="interpolating-model-outputs.html#cb24-7"></a>  <span class="dt">members       =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">5</span>, <span class="dv">6</span>),</span>
+<span id="cb24-8"><a href="interpolating-model-outputs.html#cb24-8"></a>  <span class="dt">lags          =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">1</span>),</span>
+<span id="cb24-9"><a href="interpolating-model-outputs.html#cb24-9"></a>  <span class="dt">by            =</span> <span class="st">&quot;3h&quot;</span>,                </span>
+<span id="cb24-10"><a href="interpolating-model-outputs.html#cb24-10"></a>  <span class="dt">file_path     =</span> <span class="kw">here</span>(<span class="st">&quot;data/vfld&quot;</span>),    </span>
+<span id="cb24-11"><a href="interpolating-model-outputs.html#cb24-11"></a>  <span class="dt">file_template =</span> <span class="st">&quot;vfld_eps&quot;</span>,</span>
+<span id="cb24-12"><a href="interpolating-model-outputs.html#cb24-12"></a>  <span class="dt">return_data   =</span> <span class="ot">TRUE</span>                  </span>
+<span id="cb24-13"><a href="interpolating-model-outputs.html#cb24-13"></a>)</span>
+<span id="cb24-14"><a href="interpolating-model-outputs.html#cb24-14"></a><span class="co">## ● CMEPS_prod</span></span>
+<span id="cb24-15"><a href="interpolating-model-outputs.html#cb24-15"></a><span class="co">## # A tibble: 40,215 x 15</span></span>
+<span id="cb24-16"><a href="interpolating-model-outputs.html#cb24-16"></a><span class="co">##    fcdate              lead_time parameter   SID   lat   lon units validdate           fcst_cycle CMEPS_prod_mbr0…</span></span>
+<span id="cb24-17"><a href="interpolating-model-outputs.html#cb24-17"></a><span class="co">##    &lt;dttm&gt;                  &lt;dbl&gt; &lt;chr&gt;     &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt; &lt;dttm&gt;              &lt;chr&gt;                 &lt;dbl&gt;</span></span>
+<span id="cb24-18"><a href="interpolating-model-outputs.html#cb24-18"></a><span class="co">##  1 2019-02-17 00:00:00         0 T2m        1001  70.9 -8.67 K     2019-02-17 00:00:00 00                     269.</span></span>
+<span id="cb24-19"><a href="interpolating-model-outputs.html#cb24-19"></a><span class="co">##  2 2019-02-17 00:00:00         0 T2m        1010  69.3 16.1  K     2019-02-17 00:00:00 00                     275.</span></span>
+<span id="cb24-20"><a href="interpolating-model-outputs.html#cb24-20"></a><span class="co">##  3 2019-02-17 00:00:00         0 T2m        1014  69.2 17.9  K     2019-02-17 00:00:00 00                     273.</span></span>
+<span id="cb24-21"><a href="interpolating-model-outputs.html#cb24-21"></a><span class="co">##  4 2019-02-17 00:00:00         0 T2m        1015  69.6 17.8  K     2019-02-17 00:00:00 00                     275.</span></span>
+<span id="cb24-22"><a href="interpolating-model-outputs.html#cb24-22"></a><span class="co">##  5 2019-02-17 00:00:00         0 T2m        1018  69.2 16.0  K     2019-02-17 00:00:00 00                     271.</span></span>
+<span id="cb24-23"><a href="interpolating-model-outputs.html#cb24-23"></a><span class="co">##  6 2019-02-17 00:00:00         0 T2m        1023  69.1 18.5  K     2019-02-17 00:00:00 00                     272.</span></span>
+<span id="cb24-24"><a href="interpolating-model-outputs.html#cb24-24"></a><span class="co">##  7 2019-02-17 00:00:00         0 T2m        1025  69.7 18.9  K     2019-02-17 00:00:00 00                     272.</span></span>
+<span id="cb24-25"><a href="interpolating-model-outputs.html#cb24-25"></a><span class="co">##  8 2019-02-17 00:00:00         0 T2m        1026  69.7 18.9  K     2019-02-17 00:00:00 00                     272.</span></span>
+<span id="cb24-26"><a href="interpolating-model-outputs.html#cb24-26"></a><span class="co">##  9 2019-02-17 00:00:00         0 T2m        1027  69.7 18.9  K     2019-02-17 00:00:00 00                     273.</span></span>
+<span id="cb24-27"><a href="interpolating-model-outputs.html#cb24-27"></a><span class="co">## 10 2019-02-17 00:00:00         0 T2m        1033  70.2 19.5  K     2019-02-17 00:00:00 00                     273.</span></span>
+<span id="cb24-28"><a href="interpolating-model-outputs.html#cb24-28"></a><span class="co">## # … with 40,205 more rows, and 5 more variables: CMEPS_prod_mbr001 &lt;dbl&gt;, CMEPS_prod_mbr003_lag2h &lt;dbl&gt;,</span></span>
+<span id="cb24-29"><a href="interpolating-model-outputs.html#cb24-29"></a><span class="co">## #   CMEPS_prod_mbr004_lag2h &lt;dbl&gt;, CMEPS_prod_mbr005_lag1h &lt;dbl&gt;, CMEPS_prod_mbr006_lag1h &lt;dbl&gt;</span></span></code></pre></div>
+<p>Your turn</p>
+<ul>
+<li>Get CMEPS_prod data for all of the same parameters as before and write to SQLite files</li>
+<li>Do the same for precipitation (“Pcp”) for both CMEPS_prod and MEPS_prod</li>
+</ul>
+<p>Solutions</p>
+<ul>
+<li>Get CMEPS_prod data for all of the same parameters as before and write to SQLite files</li>
+</ul>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="interpolating-model-outputs.html#cb25-1"></a><span class="kw">read_forecast</span>(</span>
+<span id="cb25-2"><a href="interpolating-model-outputs.html#cb25-2"></a>  <span class="dt">start_date          =</span> <span class="dv">2019021700</span>,           </span>
+<span id="cb25-3"><a href="interpolating-model-outputs.html#cb25-3"></a>  <span class="dt">end_date            =</span> <span class="dv">2019021718</span>,           </span>
+<span id="cb25-4"><a href="interpolating-model-outputs.html#cb25-4"></a>  <span class="dt">fcst_model          =</span> <span class="st">&quot;CMEPS_prod&quot;</span>, </span>
+<span id="cb25-5"><a href="interpolating-model-outputs.html#cb25-5"></a>  <span class="dt">parameter           =</span> <span class="kw">c</span>(<span class="st">&quot;T2m&quot;</span>, <span class="st">&quot;S10m&quot;</span>, <span class="st">&quot;T&quot;</span>, <span class="st">&quot;Td&quot;</span>),                 </span>
+<span id="cb25-6"><a href="interpolating-model-outputs.html#cb25-6"></a>  <span class="dt">lead_time           =</span> <span class="kw">seq</span>(<span class="dv">0</span>, <span class="dv">12</span>, <span class="dv">3</span>), </span>
+<span id="cb25-7"><a href="interpolating-model-outputs.html#cb25-7"></a>  <span class="dt">members             =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">5</span>, <span class="dv">6</span>),</span>
+<span id="cb25-8"><a href="interpolating-model-outputs.html#cb25-8"></a>  <span class="dt">lags                =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">1</span>),</span>
+<span id="cb25-9"><a href="interpolating-model-outputs.html#cb25-9"></a>  <span class="dt">by                  =</span> <span class="st">&quot;3h&quot;</span>,                </span>
+<span id="cb25-10"><a href="interpolating-model-outputs.html#cb25-10"></a>  <span class="dt">file_path           =</span> <span class="kw">here</span>(<span class="st">&quot;data/vfld&quot;</span>),    </span>
+<span id="cb25-11"><a href="interpolating-model-outputs.html#cb25-11"></a>  <span class="dt">file_template       =</span> <span class="st">&quot;vfld_eps&quot;</span>,</span>
+<span id="cb25-12"><a href="interpolating-model-outputs.html#cb25-12"></a>  <span class="dt">transformation_opts =</span> <span class="kw">interpolate_opts</span>(<span class="dt">keep_model_t2m  =</span> <span class="ot">TRUE</span>),</span>
+<span id="cb25-13"><a href="interpolating-model-outputs.html#cb25-13"></a>  <span class="dt">output_file_opts    =</span> <span class="kw">sqlite_opts</span>(<span class="dt">path =</span> <span class="kw">here</span>(<span class="st">&quot;data/FCTABLE/ensemble&quot;</span>))</span>
+<span id="cb25-14"><a href="interpolating-model-outputs.html#cb25-14"></a>)</span></code></pre></div>
+<ul>
+<li>Do the same for precipitation (“Pcp”) for both CMEPS_prod and MEPS_prod</li>
+</ul>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="interpolating-model-outputs.html#cb26-1"></a><span class="kw">read_forecast</span>(</span>
+<span id="cb26-2"><a href="interpolating-model-outputs.html#cb26-2"></a>  <span class="dt">start_date      =</span> <span class="dv">2019021700</span>,           </span>
+<span id="cb26-3"><a href="interpolating-model-outputs.html#cb26-3"></a>  <span class="dt">end_date        =</span> <span class="dv">2019021718</span>,           </span>
+<span id="cb26-4"><a href="interpolating-model-outputs.html#cb26-4"></a>  <span class="dt">fcst_model      =</span> <span class="kw">c</span>(<span class="st">&quot;MEPS_prod&quot;</span>, <span class="st">&quot;CMEPS_prod&quot;</span>), </span>
+<span id="cb26-5"><a href="interpolating-model-outputs.html#cb26-5"></a>  <span class="dt">parameter       =</span> <span class="st">&quot;Pcp&quot;</span>,                 </span>
+<span id="cb26-6"><a href="interpolating-model-outputs.html#cb26-6"></a>  <span class="dt">lead_time       =</span> <span class="kw">seq</span>(<span class="dv">0</span>, <span class="dv">12</span>, <span class="dv">3</span>), </span>
+<span id="cb26-7"><a href="interpolating-model-outputs.html#cb26-7"></a>  <span class="dt">members         =</span> <span class="kw">list</span>(<span class="dt">MEPS_prod =</span> <span class="kw">seq</span>(<span class="dv">0</span>, <span class="dv">9</span>), <span class="dt">CMEPS_prod =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">5</span>, <span class="dv">6</span>)),</span>
+<span id="cb26-8"><a href="interpolating-model-outputs.html#cb26-8"></a>  <span class="dt">lags            =</span> <span class="kw">list</span>(<span class="dt">CMEPS_prod =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">1</span>)),</span>
+<span id="cb26-9"><a href="interpolating-model-outputs.html#cb26-9"></a>  <span class="dt">by              =</span> <span class="st">&quot;3h&quot;</span>,                </span>
+<span id="cb26-10"><a href="interpolating-model-outputs.html#cb26-10"></a>  <span class="dt">file_path       =</span> <span class="kw">here</span>(<span class="st">&quot;data/vfld&quot;</span>),    </span>
+<span id="cb26-11"><a href="interpolating-model-outputs.html#cb26-11"></a>  <span class="dt">file_template   =</span> <span class="st">&quot;vfld_eps&quot;</span>,</span>
+<span id="cb26-12"><a href="interpolating-model-outputs.html#cb26-12"></a>  <span class="dt">output_file_opts =</span> <span class="kw">sqlite_opts</span>(<span class="dt">path =</span> <span class="kw">here</span>(<span class="st">&quot;data/FCTABLE/ensemble&quot;</span>)), </span>
+<span id="cb26-13"><a href="interpolating-model-outputs.html#cb26-13"></a>)</span></code></pre></div>
+
+</div>
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="index.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="convert-observations-to-sqlite.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": null,
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>
