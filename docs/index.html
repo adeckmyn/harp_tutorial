@@ -13,7 +13,7 @@
   
   
   <meta property="og:description" content="This will form the harp tutorial / book." />
-  <meta name="github-repo" content="andrew-MET/harpTutorial" />
+  <meta name="github-repo" content="harphub/harpTutorial" />
 
   <meta name="twitter:card" content="summary" />
   <meta name="twitter:title" content="harp Tutorial" />
@@ -24,7 +24,7 @@
 <meta name="author" content="Andrew Singleton" />
 
 
-<meta name="date" content="2020-06-22" />
+<meta name="date" content="2020-06-24" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -203,7 +203,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="header">
 <h1 class="title">harp Tutorial</h1>
 <p class="author"><em>Andrew Singleton</em></p>
-<p class="date"><em>2020-06-22</em></p>
+<p class="date"><em>2020-06-24</em></p>
 </div>
 <div id="getting-started" class="section level1">
 <h1><span class="header-section-number">Chapter 1</span> Getting Started</h1>
@@ -232,11 +232,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>If you are concerned about updating R packages that you use for other projects then skip the rest of this section and go to the section on <a href="index.html#isolating-harp">Isolating harp</a>.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="index.html#cb2-1"></a><span class="kw">install.packages</span>(<span class="st">&quot;remotes&quot;</span>)</span></code></pre></div>
 <p>Then we can use the remotes package to install harp from Github:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="index.html#cb3-1"></a>remotes<span class="op">::</span><span class="kw">install_github</span>(<span class="st">&quot;andrew-MET/harp&quot;</span>)</span></code></pre></div>
-<p>Note that “andrew-MET” is a development location for harp, and the recommended place to download from will soon change.
-If you encounter problems with system libraries, the missing libraries will make themselves known at this stage. If you have system libraries installed in non-standard locations, you can specify those locations using the <code>configure.args</code> argument in combination with the R package that needs the system library. For example, if you have PROJ, which is required by the <code>meteogrid</code> package, installed in a non-standard location, you would do the following:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="index.html#cb3-1"></a>remotes<span class="op">::</span><span class="kw">install_github</span>(<span class="st">&quot;harphub/harp&quot;</span>)</span></code></pre></div>
+<p>If you encounter problems with system libraries, the missing libraries will make themselves known at this stage. If you have system libraries installed in non-standard locations, you can specify those locations using the <code>configure.args</code> argument in combination with the R package that needs the system library. For example, if you have PROJ, which is required by the <code>meteogrid</code> package, installed in a non-standard location, you would do the following:</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="index.html#cb4-1"></a>remotes<span class="op">::</span><span class="kw">install_github</span>(</span>
-<span id="cb4-2"><a href="index.html#cb4-2"></a>  <span class="st">&quot;andrew-MET/harp&quot;</span>,</span>
+<span id="cb4-2"><a href="index.html#cb4-2"></a>  <span class="st">&quot;harphub/harp&quot;</span>,</span>
 <span id="cb4-3"><a href="index.html#cb4-3"></a>  <span class="dt">configure.args =</span> <span class="kw">c</span>(</span>
 <span id="cb4-4"><a href="index.html#cb4-4"></a>    <span class="dt">meteogrid =</span> <span class="st">&quot;--with-proj=/path/to/proj&quot;</span></span>
 <span id="cb4-5"><a href="index.html#cb4-5"></a>  )</span>
@@ -246,7 +245,7 @@ If you encounter problems with system libraries, the missing libraries will make
 <div id="setting-up-a-project" class="section level2">
 <h2><span class="header-section-number">1.3</span> Setting up a project</h2>
 <p>To follow the tutorial, you will need to download the data. These data are found in the harpData package, which can also be installed from Github:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="index.html#cb5-1"></a>remotes<span class="op">::</span><span class="kw">install_github</span>(<span class="st">&quot;andrew-MET/harpData&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="index.html#cb5-1"></a>remotes<span class="op">::</span><span class="kw">install_github</span>(<span class="st">&quot;harphub/harpData&quot;</span>)</span></code></pre></div>
 <p>For the tutorial you should set up a project in clean directory. There are slightly different approaches depending on whether you’re using <a href="index.html#rstudio-1">RStudio</a> or R <a href="index.html#from-the-terminal">from the terminal</a></p>
 <div id="rstudio-1" class="section level3">
 <h3><span class="header-section-number">1.3.1</span> RStudio</h3>
@@ -273,7 +272,8 @@ Click on:
 <p>We will use the <code>here</code> package to set the base directory of our project. This means that whatever directory we are currently in within the project, we can set relative paths to any files and directories in the project. We also make use of the tidyverse for some data manipulation functions.</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="index.html#cb7-1"></a><span class="kw">install.packages</span>(<span class="st">&quot;here&quot;</span>)</span>
 <span id="cb7-2"><a href="index.html#cb7-2"></a><span class="kw">install.packages</span>(<span class="st">&quot;tidyverse&quot;</span>)</span></code></pre></div>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="index.html#cb8-1"></a><span class="kw">library</span>(here)</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="index.html#cb8-1"></a><span class="kw">library</span>(here)</span>
+<span id="cb8-2"><a href="index.html#cb8-2"></a><span class="co">## here() starts at /home/andrewts/R-projects/harp_tutorial</span></span></code></pre></div>
 <p>Now will create a data directory and link the contents of the harpData package to the data directory. We will do this by making a vector of the directories we want and loop over the vector and create the directories. Don’t worry too much about the syntax at this stage.</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="index.html#cb9-1"></a><span class="kw">dir.create</span>(<span class="kw">here</span>(<span class="st">&quot;data&quot;</span>))</span>
 <span id="cb9-2"><a href="index.html#cb9-2"></a><span class="cf">for</span> (data_dir <span class="cf">in</span> <span class="kw">c</span>(<span class="st">&quot;grib&quot;</span>, <span class="st">&quot;netcdf&quot;</span>, <span class="st">&quot;vfld&quot;</span>, <span class="st">&quot;vobs&quot;</span>)) {</span>
@@ -293,7 +293,7 @@ Click on:
 <p>If you are using R from the terminal, before installing harp create the project directory as described in R <a href="index.html#from-the-terminal">from the terminal</a> and navigate to it using <code>setwd</code>. Then use renv to create the isolated environment:</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="index.html#cb10-1"></a><span class="kw">install.packages</span>(<span class="st">&quot;renv&quot;</span>)</span>
 <span id="cb10-2"><a href="index.html#cb10-2"></a>renv<span class="op">::</span><span class="kw">init</span>()</span>
-<span id="cb10-3"><a href="index.html#cb10-3"></a>renv<span class="op">::</span><span class="kw">install</span>(<span class="st">&quot;andrew-MET/harp&quot;</span>)</span>
+<span id="cb10-3"><a href="index.html#cb10-3"></a>renv<span class="op">::</span><span class="kw">install</span>(<span class="st">&quot;harphub/harp&quot;</span>)</span>
 <span id="cb10-4"><a href="index.html#cb10-4"></a>renv<span class="op">::</span><span class="kw">install</span>(<span class="st">&quot;tidyverse&quot;</span>)</span>
 <span id="cb10-5"><a href="index.html#cb10-5"></a>renv<span class="op">::</span><span class="kw">install</span>(<span class="st">&quot;here&quot;</span>)</span>
 <span id="cb10-6"><a href="index.html#cb10-6"></a>renv<span class="op">::</span><span class="kw">snapshot</span>()</span></code></pre></div>

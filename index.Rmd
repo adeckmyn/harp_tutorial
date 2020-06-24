@@ -5,7 +5,7 @@ date: "`r Sys.Date()`"
 site: bookdown::bookdown_site
 output: bookdown::gitbook
 documentclass: book
-github-repo: andrew-MET/harpTutorial
+github-repo: harphub/harpTutorial
 description: "This will form the harp tutorial / book."
 ---
 
@@ -15,6 +15,7 @@ knitr::opts_chunk$set(echo = TRUE)
 # Getting Started
 
 ## System Requirements
+
 ### R
 harp has been tested on Linux platforms with R versions going back to R 3.3.1. At the time of writing, the current version of R is R 4.0.1. See https://cran.r-project.org/ for details on how to download and install R. 
 
@@ -44,14 +45,14 @@ install.packages("remotes")
 
 Then we can use the remotes package to install harp from Github:
 ```{r install_harp, eval = FALSE}
-remotes::install_github("andrew-MET/harp")
+remotes::install_github("harphub/harp")
 ```
 
-Note that "andrew-MET" is a development location for harp, and the recommended place to download from will soon change. 
+ 
 If you encounter problems with system libraries, the missing libraries will make themselves known at this stage. If you have system libraries installed in non-standard locations, you can specify those locations using the `configure.args` argument in combination with the R package that needs the system library. For example, if you have PROJ, which is required by the `meteogrid` package, installed in a non-standard location, you would do the following:
 ```{r install_harp_conf, eval = FALSE}
 remotes::install_github(
-  "andrew-MET/harp",
+  "harphub/harp",
   configure.args = c(
     meteogrid = "--with-proj=/path/to/proj"
   )
@@ -63,7 +64,7 @@ where `/path/to/proj` is the full path to your PROJ installation.
 ## Setting up a project
 To follow the tutorial, you will need to download the data. These data are found in the harpData package, which can also be installed from Github:
 ```{r install_harpData, eval = FALSE}
-remotes::install_github("andrew-MET/harpData")
+remotes::install_github("harphub/harpData")
 ```
 
 For the tutorial you should set up a project in clean directory. There are slightly different approaches depending on whether you're using [RStudio] or R [from the terminal]
@@ -122,7 +123,7 @@ If you are using R from the terminal, before installing harp create the project 
 ```{r harp_renv, eval = FALSE}
 install.packages("renv")
 renv::init()
-renv::install("andrew-MET/harp")
+renv::install("harphub/harp")
 renv::install("tidyverse")
 renv::install("here")
 renv::snapshot()
