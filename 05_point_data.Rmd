@@ -1,5 +1,9 @@
 ## Reading in ensemble data
 
+```{r setup05, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
 Now we have seen harp in action with deterministic data, let's move on to ensemble data. harp's origins are in verification of ensemble data, so the functionality here is a little more mature. Many of the same functions that were introduced in the deterministic section can be used for ensemble data as well. There are also functions that currently only work with ensemble data and are in the process of being upgraded to handle deterministic forecasts as well. 
 
 We can use the same `read_point_forecast` function to read in ensemble data - we just need to tell it that we are reading ensemble data by setting `fcst_type = "eps"`. 

@@ -1,5 +1,10 @@
 # Interpolating model outputs
 
+```{r setup01, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+
 ## Introduction
 The "internal" file format for harp is SQLite. SQLite allows fast access to the data and the ability to filter exactly what you want to read. Once our data are in SQLite format, we don't have to convert them again. 
 

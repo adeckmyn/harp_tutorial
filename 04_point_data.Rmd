@@ -1,5 +1,9 @@
 # Point Data 
 
+```{r setup04, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
 ## Introduction
 We now have all of our data prepared for harp and we are ready to work with. That work includes undertsanding how harp data are structured, how to plot forecast data, how to manipulate the data, and verification.
 

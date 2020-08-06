@@ -24,7 +24,7 @@
 <meta name="author" content="Andrew Singleton" />
 
 
-<meta name="date" content="2020-06-24" />
+<meta name="date" content="2020-08-06" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -209,145 +209,51 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="converting-observations-to-sqlite" class="section level2">
 <h2><span class="header-section-number">3.2</span> Converting observations to SQLite</h2>
 <p>The harp function for converting observations is <code>read_obs_convert</code>. It works similarly to the <code>read_forecast</code> function, but has fewer arguments. In the data directory is a vobs directory containing the vobs files. We have hourly data here from 00 UTC 17 Feb 2019 to 23 UTC 20 Feb. Let’s read them in:</p>
-<div class="sourceCode" id="cb1922"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1922-1"><a href="convert-observations-to-sqlite.html#cb1922-1"></a><span class="kw">library</span>(tidyverse)</span>
-<span id="cb1922-2"><a href="convert-observations-to-sqlite.html#cb1922-2"></a><span class="kw">library</span>(here)</span>
-<span id="cb1922-3"><a href="convert-observations-to-sqlite.html#cb1922-3"></a><span class="kw">library</span>(harpIO)</span>
-<span id="cb1922-4"><a href="convert-observations-to-sqlite.html#cb1922-4"></a></span>
-<span id="cb1922-5"><a href="convert-observations-to-sqlite.html#cb1922-5"></a><span class="kw">read_obs_convert</span>(</span>
-<span id="cb1922-6"><a href="convert-observations-to-sqlite.html#cb1922-6"></a>  <span class="dt">start_date  =</span> <span class="dv">2019021700</span>,</span>
-<span id="cb1922-7"><a href="convert-observations-to-sqlite.html#cb1922-7"></a>  <span class="dt">end_date    =</span> <span class="dv">2019022023</span>,</span>
-<span id="cb1922-8"><a href="convert-observations-to-sqlite.html#cb1922-8"></a>  <span class="dt">by          =</span> <span class="st">&quot;1h&quot;</span>,</span>
-<span id="cb1922-9"><a href="convert-observations-to-sqlite.html#cb1922-9"></a>  <span class="dt">obs_path    =</span> <span class="kw">here</span>(<span class="st">&quot;data/vobs&quot;</span>),</span>
-<span id="cb1922-10"><a href="convert-observations-to-sqlite.html#cb1922-10"></a>  <span class="dt">return_data =</span> <span class="ot">TRUE</span></span>
-<span id="cb1922-11"><a href="convert-observations-to-sqlite.html#cb1922-11"></a>)</span></code></pre></div>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021700</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021701</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021702</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021703</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021704</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021705</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021706</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021707</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021708</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021709</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021710</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021711</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021712</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021713</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021714</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021715</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021716</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021717</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021718</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021719</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021720</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021721</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021722</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021723</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021800</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021801</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021802</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021803</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021804</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021805</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021806</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021807</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021808</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021809</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021810</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021811</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021812</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021813</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021814</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021815</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021816</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021817</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021818</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021819</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021820</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021821</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021822</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021823</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021900</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021901</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021902</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021903</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021904</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021905</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021906</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021907</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021908</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021909</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021910</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021911</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021912</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021913</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021914</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021915</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021916</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021917</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021918</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021919</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021920</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021921</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021922</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021923</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019022000</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019022001</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019022002</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019022003</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019022004</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019022005</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019022006</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019022007</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019022008</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019022009</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019022010</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019022011</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019022012</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019022013</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019022014</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019022015</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019022016</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019022017</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019022018</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019022019</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019022020</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019022021</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019022022</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019022023</code></pre>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="convert-observations-to-sqlite.html#cb36-1"></a><span class="kw">library</span>(tidyverse)</span>
+<span id="cb36-2"><a href="convert-observations-to-sqlite.html#cb36-2"></a><span class="kw">library</span>(here)</span>
+<span id="cb36-3"><a href="convert-observations-to-sqlite.html#cb36-3"></a><span class="kw">library</span>(harpIO)</span>
+<span id="cb36-4"><a href="convert-observations-to-sqlite.html#cb36-4"></a></span>
+<span id="cb36-5"><a href="convert-observations-to-sqlite.html#cb36-5"></a><span class="kw">read_obs_convert</span>(</span>
+<span id="cb36-6"><a href="convert-observations-to-sqlite.html#cb36-6"></a>  <span class="dt">start_date  =</span> <span class="dv">2019021700</span>,</span>
+<span id="cb36-7"><a href="convert-observations-to-sqlite.html#cb36-7"></a>  <span class="dt">end_date    =</span> <span class="dv">2019022023</span>,</span>
+<span id="cb36-8"><a href="convert-observations-to-sqlite.html#cb36-8"></a>  <span class="dt">by          =</span> <span class="st">&quot;1h&quot;</span>,</span>
+<span id="cb36-9"><a href="convert-observations-to-sqlite.html#cb36-9"></a>  <span class="dt">obs_path    =</span> <span class="kw">here</span>(<span class="st">&quot;data/vobs&quot;</span>),</span>
+<span id="cb36-10"><a href="convert-observations-to-sqlite.html#cb36-10"></a>  <span class="dt">return_data =</span> <span class="ot">TRUE</span></span>
+<span id="cb36-11"><a href="convert-observations-to-sqlite.html#cb36-11"></a>)</span></code></pre></div>
 <pre><code>## $synop
 ## # A tibble: 324,138 x 24
-##    validdate   SID   lat   lon  elev CCtot  D10m  S10m   T2m  Td2m  RH2m      Q2m    Ps  Pmsl   vis AccPcp3h AccPcp6h
-##        &lt;dbl&gt; &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;
-##  1    1.55e9  1001  70.9 -8.67     9  8      202   8.8  270.  268.  85.3  2.47e-3 1007. 1009. 10000     NA        0  
-##  2    1.55e9  1002  80.1 16.2      8 NA      330  13    248.  246   81.0  4.03e-4 1010. 1011.    NA     NA       NA  
-##  3    1.55e9  1003  77   15.5     10  1.04    30   2    252.  245.  52.1  3.64e-4 1010. 1011. 50000     NA        0  
-##  4    1.55e9  1006  78.3 22.8     14 NA       20   3    247.  244.  78.5  3.42e-4 1008. 1010.    NA     NA       NA  
-##  5    1.55e9  1007  78.9 11.9      8 NA      350   5    250.   NA   NA   NA       1013. 1014.    NA     NA       NA  
-##  6    1.55e9  1008  78.2 15.5     27  7.04   298   7.6  251.  246   61.9  4.04e-4 1008. 1012. 30000     NA       NA  
-##  7    1.55e9  1009  80.7 25.0      5 NA      330  12    244.  241.  76.5  2.62e-4 1006. 1007     NA     NA       NA  
-##  8    1.55e9  1010  69.3 16.1     13 NA      340  11.3  274.  268.  59.9  2.48e-3 1003  1005.    NA      0.6      0.9
-##  9    1.55e9  1011  80.1 31.5      9 NA      352  11.4  240.  236.  68.9  1.50e-4 1004. 1005     NA     NA       NA  
-## 10    1.55e9  1013  78.1 13.6    -99 NA       NA  NA     NA    NA   NA   NA         NA    NA     NA      0       NA  
-## # … with 324,128 more rows, and 7 more variables: AccPcp24h &lt;dbl&gt;, N75 &lt;int&gt;, CClow &lt;int&gt;, Cbase &lt;int&gt;, AccPcp1h &lt;dbl&gt;,
-## #   Gmax &lt;dbl&gt;, AccPcp12h &lt;dbl&gt;
+##    validdate   SID   lat   lon  elev CCtot  D10m  S10m   T2m  Td2m  RH2m
+##        &lt;dbl&gt; &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+##  1    1.55e9  1001  70.9 -8.67     9  8      202   8.8  270.  268.  85.3
+##  2    1.55e9  1002  80.1 16.2      8 NA      330  13    248.  246   81.0
+##  3    1.55e9  1003  77   15.5     10  1.04    30   2    252.  245.  52.1
+##  4    1.55e9  1006  78.3 22.8     14 NA       20   3    247.  244.  78.5
+##  5    1.55e9  1007  78.9 11.9      8 NA      350   5    250.   NA   NA  
+##  6    1.55e9  1008  78.2 15.5     27  7.04   298   7.6  251.  246   61.9
+##  7    1.55e9  1009  80.7 25.0      5 NA      330  12    244.  241.  76.5
+##  8    1.55e9  1010  69.3 16.1     13 NA      340  11.3  274.  268.  59.9
+##  9    1.55e9  1011  80.1 31.5      9 NA      352  11.4  240.  236.  68.9
+## 10    1.55e9  1013  78.1 13.6    -99 NA       NA  NA     NA    NA   NA  
+## # … with 324,128 more rows, and 13 more variables: Q2m &lt;dbl&gt;, Ps &lt;dbl&gt;,
+## #   Pmsl &lt;dbl&gt;, vis &lt;dbl&gt;, AccPcp3h &lt;dbl&gt;, AccPcp6h &lt;dbl&gt;, AccPcp24h &lt;dbl&gt;,
+## #   N75 &lt;int&gt;, CClow &lt;int&gt;, Cbase &lt;int&gt;, AccPcp1h &lt;dbl&gt;, Gmax &lt;dbl&gt;,
+## #   AccPcp12h &lt;dbl&gt;
 ## 
 ## $temp
 ## # A tibble: 110,568 x 13
-##     validdate   SID   lat   lon  elev     p     Z     T    RH     D     S           Q    Td
-##         &lt;dbl&gt; &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;       &lt;dbl&gt; &lt;dbl&gt;
-##  1 1550361600  1001  70.9 -8.67     9  1000    64  269.  83.3   202     3  0.00229     266.
-##  2 1550361600  1001  70.9 -8.67     9   925   672  264. 100     205     8  0.00200     264.
-##  3 1550361600  1001  70.9 -8.67     9   850  1322  262.  86.4   161     3  0.00162     260 
-##  4 1550361600  1001  70.9 -8.67     9   700  2792  254.  32     251     4  0.000388    242.
-##  5 1550361600  1001  70.9 -8.67     9   500  5224  240.   8.7   270    18  0.0000382   218.
-##  6 1550361600  1001  70.9 -8.67     9   400  6762  230.  28.1   275    32  0.0000568   219.
-##  7 1550361600  1001  70.9 -8.67     9   300  8656  218   38.6   269    43  0.0000262   211.
-##  8 1550361600  1001  70.9 -8.67     9   250    NA   NA   NA      NA    NA NA            NA 
-##  9 1550361600  1001  70.9 -8.67     9   200 11220  218.   2.9   262    28  0.00000288  193.
-## 10 1550361600  1001  70.9 -8.67     9   150 13048  217.   2.5   257    21  0.00000310  192.
-## # … with 110,558 more rows
+##    validdate   SID   lat   lon  elev     p     Z     T    RH     D     S
+##        &lt;dbl&gt; &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+##  1    1.55e9  1001  70.9 -8.67     9  1000    64  269.  83.3   202     3
+##  2    1.55e9  1001  70.9 -8.67     9   925   672  264. 100     205     8
+##  3    1.55e9  1001  70.9 -8.67     9   850  1322  262.  86.4   161     3
+##  4    1.55e9  1001  70.9 -8.67     9   700  2792  254.  32     251     4
+##  5    1.55e9  1001  70.9 -8.67     9   500  5224  240.   8.7   270    18
+##  6    1.55e9  1001  70.9 -8.67     9   400  6762  230.  28.1   275    32
+##  7    1.55e9  1001  70.9 -8.67     9   300  8656  218   38.6   269    43
+##  8    1.55e9  1001  70.9 -8.67     9   250    NA   NA   NA      NA    NA
+##  9    1.55e9  1001  70.9 -8.67     9   200 11220  218.   2.9   262    28
+## 10    1.55e9  1001  70.9 -8.67     9   150 13048  217.   2.5   257    21
+## # … with 110,558 more rows, and 2 more variables: Q &lt;dbl&gt;, Td &lt;dbl&gt;
 ## 
 ## $synop_params
 ##    parameter accum_hours   units
@@ -386,119 +292,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li>Write the observations to SQLite files in the directory data/OBSTABLE</li>
 </ul>
 <p>Solution</p>
-<div class="sourceCode" id="cb2020"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2020-1"><a href="convert-observations-to-sqlite.html#cb2020-1"></a><span class="kw">read_obs_convert</span>(</span>
-<span id="cb2020-2"><a href="convert-observations-to-sqlite.html#cb2020-2"></a>  <span class="dt">start_date  =</span> <span class="dv">2019021700</span>,</span>
-<span id="cb2020-3"><a href="convert-observations-to-sqlite.html#cb2020-3"></a>  <span class="dt">end_date    =</span> <span class="dv">2019022023</span>,</span>
-<span id="cb2020-4"><a href="convert-observations-to-sqlite.html#cb2020-4"></a>  <span class="dt">by          =</span> <span class="st">&quot;1h&quot;</span>,</span>
-<span id="cb2020-5"><a href="convert-observations-to-sqlite.html#cb2020-5"></a>  <span class="dt">obs_path    =</span> <span class="kw">here</span>(<span class="st">&quot;data/vobs&quot;</span>),</span>
-<span id="cb2020-6"><a href="convert-observations-to-sqlite.html#cb2020-6"></a>  <span class="dt">sqlite_path =</span> <span class="kw">here</span>(<span class="st">&quot;data/OBSTABLE&quot;</span>)</span>
-<span id="cb2020-7"><a href="convert-observations-to-sqlite.html#cb2020-7"></a>)</span></code></pre></div>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021700</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021701</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021702</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021703</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021704</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021705</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021706</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021707</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021708</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021709</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021710</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021711</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021712</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021713</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021714</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021715</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021716</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021717</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021718</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021719</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021720</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021721</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021722</code></pre>
-<pre><code>## Writing to: SYNOP in /home/andrewts/R-projects/harp_tutorial/data/OBSTABLE/OBSTABLE_2019.sqlite</code></pre>
-<pre><code>## Writing to: TEMP in /home/andrewts/R-projects/harp_tutorial/data/OBSTABLE/OBSTABLE_2019.sqlite</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021723</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021800</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021801</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021802</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021803</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021804</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021805</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021806</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021807</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021808</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021809</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021810</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021811</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021812</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021813</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021814</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021815</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021816</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021817</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021818</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021819</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021820</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021821</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021822</code></pre>
-<pre><code>## Writing to: SYNOP in /home/andrewts/R-projects/harp_tutorial/data/OBSTABLE/OBSTABLE_2019.sqlite</code></pre>
-<pre><code>## Writing to: TEMP in /home/andrewts/R-projects/harp_tutorial/data/OBSTABLE/OBSTABLE_2019.sqlite</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021823</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021900</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021901</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021902</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021903</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021904</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021905</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021906</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021907</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021908</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021909</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021910</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021911</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021912</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021913</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021914</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021915</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021916</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021917</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021918</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021919</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021920</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021921</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021922</code></pre>
-<pre><code>## Writing to: SYNOP in /home/andrewts/R-projects/harp_tutorial/data/OBSTABLE/OBSTABLE_2019.sqlite</code></pre>
-<pre><code>## Writing to: TEMP in /home/andrewts/R-projects/harp_tutorial/data/OBSTABLE/OBSTABLE_2019.sqlite</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019021923</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019022000</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019022001</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019022002</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019022003</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019022004</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019022005</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019022006</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019022007</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019022008</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019022009</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019022010</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019022011</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019022012</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019022013</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019022014</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019022015</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019022016</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019022017</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019022018</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019022019</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019022020</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019022021</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019022022</code></pre>
-<pre><code>## Writing to: SYNOP in /home/andrewts/R-projects/harp_tutorial/data/OBSTABLE/OBSTABLE_2019.sqlite</code></pre>
-<pre><code>## Writing to: TEMP in /home/andrewts/R-projects/harp_tutorial/data/OBSTABLE/OBSTABLE_2019.sqlite</code></pre>
-<pre><code>## Reading: /home/andrewts/R-projects/harp_tutorial/data/vobs/vobs2019022023</code></pre>
-<pre><code>## Writing to: SYNOP in /home/andrewts/R-projects/harp_tutorial/data/OBSTABLE/OBSTABLE_2019.sqlite</code></pre>
-<pre><code>## Writing to: TEMP in /home/andrewts/R-projects/harp_tutorial/data/OBSTABLE/OBSTABLE_2019.sqlite</code></pre>
+<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="convert-observations-to-sqlite.html#cb38-1"></a><span class="kw">read_obs_convert</span>(</span>
+<span id="cb38-2"><a href="convert-observations-to-sqlite.html#cb38-2"></a>  <span class="dt">start_date  =</span> <span class="dv">2019021700</span>,</span>
+<span id="cb38-3"><a href="convert-observations-to-sqlite.html#cb38-3"></a>  <span class="dt">end_date    =</span> <span class="dv">2019022023</span>,</span>
+<span id="cb38-4"><a href="convert-observations-to-sqlite.html#cb38-4"></a>  <span class="dt">by          =</span> <span class="st">&quot;1h&quot;</span>,</span>
+<span id="cb38-5"><a href="convert-observations-to-sqlite.html#cb38-5"></a>  <span class="dt">obs_path    =</span> <span class="kw">here</span>(<span class="st">&quot;data/vobs&quot;</span>),</span>
+<span id="cb38-6"><a href="convert-observations-to-sqlite.html#cb38-6"></a>  <span class="dt">sqlite_path =</span> <span class="kw">here</span>(<span class="st">&quot;data/OBSTABLE&quot;</span>)</span>
+<span id="cb38-7"><a href="convert-observations-to-sqlite.html#cb38-7"></a>)</span></code></pre></div>
 
 </div>
 </div>
