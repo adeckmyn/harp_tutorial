@@ -24,7 +24,7 @@
 <meta name="author" content="Andrew Singleton" />
 
 
-<meta name="date" content="2020-06-24" />
+<meta name="date" content="2020-08-06" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -203,7 +203,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="header">
 <h1 class="title">harp Tutorial</h1>
 <p class="author"><em>Andrew Singleton</em></p>
-<p class="date"><em>2020-06-24</em></p>
+<p class="date"><em>2020-08-06</em></p>
 </div>
 <div id="getting-started" class="section level1">
 <h1><span class="header-section-number">Chapter 1</span> Getting Started</h1>
@@ -272,8 +272,7 @@ Click on:
 <p>We will use the <code>here</code> package to set the base directory of our project. This means that whatever directory we are currently in within the project, we can set relative paths to any files and directories in the project. We also make use of the tidyverse for some data manipulation functions.</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="index.html#cb7-1"></a><span class="kw">install.packages</span>(<span class="st">&quot;here&quot;</span>)</span>
 <span id="cb7-2"><a href="index.html#cb7-2"></a><span class="kw">install.packages</span>(<span class="st">&quot;tidyverse&quot;</span>)</span></code></pre></div>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="index.html#cb8-1"></a><span class="kw">library</span>(here)</span>
-<span id="cb8-2"><a href="index.html#cb8-2"></a><span class="co">## here() starts at /home/andrewts/R-projects/harp_tutorial</span></span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="index.html#cb8-1"></a><span class="kw">library</span>(here)</span></code></pre></div>
 <p>Now will create a data directory and link the contents of the harpData package to the data directory. We will do this by making a vector of the directories we want and loop over the vector and create the directories. Don’t worry too much about the syntax at this stage.</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="index.html#cb9-1"></a><span class="kw">dir.create</span>(<span class="kw">here</span>(<span class="st">&quot;data&quot;</span>))</span>
 <span id="cb9-2"><a href="index.html#cb9-2"></a><span class="cf">for</span> (data_dir <span class="cf">in</span> <span class="kw">c</span>(<span class="st">&quot;grib&quot;</span>, <span class="st">&quot;netcdf&quot;</span>, <span class="st">&quot;vfld&quot;</span>, <span class="st">&quot;vobs&quot;</span>)) {</span>

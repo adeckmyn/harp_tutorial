@@ -1,5 +1,9 @@
 # Convert observations to SQLite
 
+```{r setup03, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
 ## Introduction
 Point observations also come in many formats. For Hirlam, that format is vobs. Currently this is the only point observations format that harp can deal with. vobs are pretty much the same format as vfld, with files for every observation time. This is considerable file IO if you want a season's worth of data, for example. Again in harp we use sqlite to store point observations, making it quick and easy to access exactly what you want. 
 
