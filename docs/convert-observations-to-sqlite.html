@@ -24,7 +24,7 @@
 <meta name="author" content="Andrew Singleton" />
 
 
-<meta name="date" content="2020-08-06" />
+<meta name="date" content="2021-06-03" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -50,6 +50,9 @@
 
 
 
+<script src="libs/accessible-code-block-0.0.1/empty-anchor.js"></script>
+<link href="libs/anchor-sections-1.0/anchor-sections.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.0/anchor-sections.js"></script>
 
 
 <style type="text/css">
@@ -209,17 +212,17 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="converting-observations-to-sqlite" class="section level2">
 <h2><span class="header-section-number">3.2</span> Converting observations to SQLite</h2>
 <p>The harp function for converting observations is <code>read_obs_convert</code>. It works similarly to the <code>read_forecast</code> function, but has fewer arguments. In the data directory is a vobs directory containing the vobs files. We have hourly data here from 00 UTC 17 Feb 2019 to 23 UTC 20 Feb. Let’s read them in:</p>
-<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="convert-observations-to-sqlite.html#cb36-1"></a><span class="kw">library</span>(tidyverse)</span>
-<span id="cb36-2"><a href="convert-observations-to-sqlite.html#cb36-2"></a><span class="kw">library</span>(here)</span>
-<span id="cb36-3"><a href="convert-observations-to-sqlite.html#cb36-3"></a><span class="kw">library</span>(harpIO)</span>
-<span id="cb36-4"><a href="convert-observations-to-sqlite.html#cb36-4"></a></span>
-<span id="cb36-5"><a href="convert-observations-to-sqlite.html#cb36-5"></a><span class="kw">read_obs_convert</span>(</span>
-<span id="cb36-6"><a href="convert-observations-to-sqlite.html#cb36-6"></a>  <span class="dt">start_date  =</span> <span class="dv">2019021700</span>,</span>
-<span id="cb36-7"><a href="convert-observations-to-sqlite.html#cb36-7"></a>  <span class="dt">end_date    =</span> <span class="dv">2019022023</span>,</span>
-<span id="cb36-8"><a href="convert-observations-to-sqlite.html#cb36-8"></a>  <span class="dt">by          =</span> <span class="st">&quot;1h&quot;</span>,</span>
-<span id="cb36-9"><a href="convert-observations-to-sqlite.html#cb36-9"></a>  <span class="dt">obs_path    =</span> <span class="kw">here</span>(<span class="st">&quot;data/vobs&quot;</span>),</span>
-<span id="cb36-10"><a href="convert-observations-to-sqlite.html#cb36-10"></a>  <span class="dt">return_data =</span> <span class="ot">TRUE</span></span>
-<span id="cb36-11"><a href="convert-observations-to-sqlite.html#cb36-11"></a>)</span></code></pre></div>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="convert-observations-to-sqlite.html#cb37-1"></a><span class="kw">library</span>(tidyverse)</span>
+<span id="cb37-2"><a href="convert-observations-to-sqlite.html#cb37-2"></a><span class="kw">library</span>(here)</span>
+<span id="cb37-3"><a href="convert-observations-to-sqlite.html#cb37-3"></a><span class="kw">library</span>(harpIO)</span>
+<span id="cb37-4"><a href="convert-observations-to-sqlite.html#cb37-4"></a></span>
+<span id="cb37-5"><a href="convert-observations-to-sqlite.html#cb37-5"></a><span class="kw">read_obs_convert</span>(</span>
+<span id="cb37-6"><a href="convert-observations-to-sqlite.html#cb37-6"></a>  <span class="dt">start_date  =</span> <span class="dv">2019021700</span>,</span>
+<span id="cb37-7"><a href="convert-observations-to-sqlite.html#cb37-7"></a>  <span class="dt">end_date    =</span> <span class="dv">2019022023</span>,</span>
+<span id="cb37-8"><a href="convert-observations-to-sqlite.html#cb37-8"></a>  <span class="dt">by          =</span> <span class="st">&quot;1h&quot;</span>,</span>
+<span id="cb37-9"><a href="convert-observations-to-sqlite.html#cb37-9"></a>  <span class="dt">obs_path    =</span> <span class="kw">here</span>(<span class="st">&quot;data/vobs&quot;</span>),</span>
+<span id="cb37-10"><a href="convert-observations-to-sqlite.html#cb37-10"></a>  <span class="dt">return_data =</span> <span class="ot">TRUE</span></span>
+<span id="cb37-11"><a href="convert-observations-to-sqlite.html#cb37-11"></a>)</span></code></pre></div>
 <pre><code>## $synop
 ## # A tibble: 324,138 x 24
 ##    validdate   SID   lat   lon  elev CCtot  D10m  S10m   T2m  Td2m  RH2m
@@ -292,13 +295,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li>Write the observations to SQLite files in the directory data/OBSTABLE</li>
 </ul>
 <p>Solution</p>
-<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="convert-observations-to-sqlite.html#cb38-1"></a><span class="kw">read_obs_convert</span>(</span>
-<span id="cb38-2"><a href="convert-observations-to-sqlite.html#cb38-2"></a>  <span class="dt">start_date  =</span> <span class="dv">2019021700</span>,</span>
-<span id="cb38-3"><a href="convert-observations-to-sqlite.html#cb38-3"></a>  <span class="dt">end_date    =</span> <span class="dv">2019022023</span>,</span>
-<span id="cb38-4"><a href="convert-observations-to-sqlite.html#cb38-4"></a>  <span class="dt">by          =</span> <span class="st">&quot;1h&quot;</span>,</span>
-<span id="cb38-5"><a href="convert-observations-to-sqlite.html#cb38-5"></a>  <span class="dt">obs_path    =</span> <span class="kw">here</span>(<span class="st">&quot;data/vobs&quot;</span>),</span>
-<span id="cb38-6"><a href="convert-observations-to-sqlite.html#cb38-6"></a>  <span class="dt">sqlite_path =</span> <span class="kw">here</span>(<span class="st">&quot;data/OBSTABLE&quot;</span>)</span>
-<span id="cb38-7"><a href="convert-observations-to-sqlite.html#cb38-7"></a>)</span></code></pre></div>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="convert-observations-to-sqlite.html#cb39-1"></a><span class="kw">read_obs_convert</span>(</span>
+<span id="cb39-2"><a href="convert-observations-to-sqlite.html#cb39-2"></a>  <span class="dt">start_date  =</span> <span class="dv">2019021700</span>,</span>
+<span id="cb39-3"><a href="convert-observations-to-sqlite.html#cb39-3"></a>  <span class="dt">end_date    =</span> <span class="dv">2019022023</span>,</span>
+<span id="cb39-4"><a href="convert-observations-to-sqlite.html#cb39-4"></a>  <span class="dt">by          =</span> <span class="st">&quot;1h&quot;</span>,</span>
+<span id="cb39-5"><a href="convert-observations-to-sqlite.html#cb39-5"></a>  <span class="dt">obs_path    =</span> <span class="kw">here</span>(<span class="st">&quot;data/vobs&quot;</span>),</span>
+<span id="cb39-6"><a href="convert-observations-to-sqlite.html#cb39-6"></a>  <span class="dt">sqlite_path =</span> <span class="kw">here</span>(<span class="st">&quot;data/OBSTABLE&quot;</span>)</span>
+<span id="cb39-7"><a href="convert-observations-to-sqlite.html#cb39-7"></a>)</span></code></pre></div>
 
 </div>
 </div>
