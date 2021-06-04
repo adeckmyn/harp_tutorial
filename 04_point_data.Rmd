@@ -258,7 +258,7 @@ Your turn:
 ```{r eval = FALSE}
 stations <- mutate(
   station_list, 
-  station_height = cut(elev, breaks = c(-Inf, 300, Inf), labels = c("lt_300m", "ge_300m"))
+  station_height = cut(elev, breaks = c(-Inf, 300, Inf), labels = c("< 300m", ">= 300m"))
 )
 s10m <- join_to_fcst(s10m, stations, force_join = TRUE)
 ```
@@ -271,7 +271,7 @@ Solutions
 ```{r}
 stations <- mutate(
   station_list, 
-  station_height = cut(elev, breaks = c(-Inf, 300, Inf), labels = c("> 300m", ">= 300m"))
+  station_height = cut(elev, breaks = c(-Inf, 300, Inf), labels = c("< 300m", ">= 300m"))
 )
 (verif_s10m <- join_to_fcst(s10m, stations, force_join = TRUE) %>% 
   det_verify(S10m, groupings = c("leadtime", "station_height"), thresholds = seq(2.5, 12.5, 2.5)))

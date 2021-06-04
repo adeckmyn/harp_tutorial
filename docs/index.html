@@ -24,7 +24,7 @@
 <meta name="author" content="Andrew Singleton" />
 
 
-<meta name="date" content="2020-08-06" />
+<meta name="date" content="2021-06-03" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -50,6 +50,9 @@
 
 
 
+<script src="libs/accessible-code-block-0.0.1/empty-anchor.js"></script>
+<link href="libs/anchor-sections-1.0/anchor-sections.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.0/anchor-sections.js"></script>
 
 
 <style type="text/css">
@@ -203,7 +206,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="header">
 <h1 class="title">harp Tutorial</h1>
 <p class="author"><em>Andrew Singleton</em></p>
-<p class="date"><em>2020-08-06</em></p>
+<p class="date"><em>2021-06-03</em></p>
 </div>
 <div id="getting-started" class="section level1">
 <h1><span class="header-section-number">Chapter 1</span> Getting Started</h1>
@@ -244,40 +247,45 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <div id="setting-up-a-project" class="section level2">
 <h2><span class="header-section-number">1.3</span> Setting up a project</h2>
-<p>To follow the tutorial, you will need to download the data. These data are found in the harpData package, which can also be installed from Github:</p>
+<p>To follow the tutorial, you will need to download the data. These data are found in the harpData package, which can also be installed from Github.</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="index.html#cb5-1"></a>remotes<span class="op">::</span><span class="kw">install_github</span>(<span class="st">&quot;harphub/harpData&quot;</span>)</span></code></pre></div>
+<p>Note that the harpData package is large (~1 GB) and may take some time to download. R has a timeout of 60 seconds on downloads so you may need to increase this and adjust it back to 60 seconds afterwards by setting <code>timeout</code> in <code>options()</code> before installing harpData. For example, to increase the timeout to 600 seconds and then install harpData you would do the following:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="index.html#cb6-1"></a><span class="kw">options</span>(<span class="dt">timeout =</span> <span class="dv">600</span>)</span>
+<span id="cb6-2"><a href="index.html#cb6-2"></a>remotes<span class="op">::</span><span class="kw">install_github</span>(<span class="st">&quot;harphub/harpData&quot;</span>)</span>
+<span id="cb6-3"><a href="index.html#cb6-3"></a><span class="kw">options</span>(<span class="dt">timeout =</span> <span class="dv">60</span>)</span></code></pre></div>
 <p>For the tutorial you should set up a project in clean directory. There are slightly different approaches depending on whether you’re using <a href="index.html#rstudio-1">RStudio</a> or R <a href="index.html#from-the-terminal">from the terminal</a></p>
 <div id="rstudio-1" class="section level3">
 <h3><span class="header-section-number">1.3.1</span> RStudio</h3>
-<p>Click on:
-| File &gt; New Project
-Select:
-| - New Directory
-| - New Project
-Choose a directory name (e.g. harp_tutorial)
-Browse to a directory under which your project should reside
-Click on:
-| Create Project</p>
+<p>Click on:</p>
+<div class="line-block">  File &gt; New Project</div>
+<p>Select:</p>
+<div class="line-block">  - New Directory</div>
+<div class="line-block">  - New Project</div>
+<p>Choose a directory name (e.g. harp_tutorial)</p>
+<p>Browse to a directory under which your project should reside</p>
+<p>Click on:</p>
+<div class="line-block">    Create Project</div>
 </div>
 <div id="from-the-terminal" class="section level3">
 <h3><span class="header-section-number">1.3.2</span> From the terminal</h3>
 <p>Open R and do the following:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="index.html#cb6-1"></a>project_dir &lt;-<span class="st"> &quot;/path/to/harp_tutorial&quot;</span></span>
-<span id="cb6-2"><a href="index.html#cb6-2"></a><span class="kw">dir.create</span>(project_dir, <span class="dt">recursive =</span> <span class="ot">TRUE</span>)</span>
-<span id="cb6-3"><a href="index.html#cb6-3"></a><span class="kw">setwd</span>(project_dir)</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="index.html#cb7-1"></a>project_dir &lt;-<span class="st"> &quot;/path/to/harp_tutorial&quot;</span></span>
+<span id="cb7-2"><a href="index.html#cb7-2"></a><span class="kw">dir.create</span>(project_dir, <span class="dt">recursive =</span> <span class="ot">TRUE</span>)</span>
+<span id="cb7-3"><a href="index.html#cb7-3"></a><span class="kw">setwd</span>(project_dir)</span></code></pre></div>
 <p>Alternatively, you can create the directory outside of R and start R from that directory.</p>
 </div>
 <div id="linking-to-the-data" class="section level3">
 <h3><span class="header-section-number">1.3.3</span> Linking to the data</h3>
 <p>We will use the <code>here</code> package to set the base directory of our project. This means that whatever directory we are currently in within the project, we can set relative paths to any files and directories in the project. We also make use of the tidyverse for some data manipulation functions.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="index.html#cb7-1"></a><span class="kw">install.packages</span>(<span class="st">&quot;here&quot;</span>)</span>
-<span id="cb7-2"><a href="index.html#cb7-2"></a><span class="kw">install.packages</span>(<span class="st">&quot;tidyverse&quot;</span>)</span></code></pre></div>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="index.html#cb8-1"></a><span class="kw">library</span>(here)</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="index.html#cb8-1"></a><span class="kw">install.packages</span>(<span class="st">&quot;here&quot;</span>)</span>
+<span id="cb8-2"><a href="index.html#cb8-2"></a><span class="kw">install.packages</span>(<span class="st">&quot;tidyverse&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="index.html#cb9-1"></a><span class="kw">library</span>(here)</span>
+<span id="cb9-2"><a href="index.html#cb9-2"></a><span class="kw">set_here</span>()</span></code></pre></div>
 <p>Now will create a data directory and link the contents of the harpData package to the data directory. We will do this by making a vector of the directories we want and loop over the vector and create the directories. Don’t worry too much about the syntax at this stage.</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="index.html#cb9-1"></a><span class="kw">dir.create</span>(<span class="kw">here</span>(<span class="st">&quot;data&quot;</span>))</span>
-<span id="cb9-2"><a href="index.html#cb9-2"></a><span class="cf">for</span> (data_dir <span class="cf">in</span> <span class="kw">c</span>(<span class="st">&quot;grib&quot;</span>, <span class="st">&quot;netcdf&quot;</span>, <span class="st">&quot;vfld&quot;</span>, <span class="st">&quot;vobs&quot;</span>)) {</span>
-<span id="cb9-3"><a href="index.html#cb9-3"></a>  <span class="kw">file.symlink</span>(<span class="dt">from =</span> <span class="kw">system.file</span>(data_dir, <span class="dt">package =</span> <span class="st">&quot;harpData&quot;</span>), <span class="dt">to =</span> <span class="kw">here</span>(<span class="st">&quot;data&quot;</span>))</span>
-<span id="cb9-4"><a href="index.html#cb9-4"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="index.html#cb10-1"></a><span class="kw">dir.create</span>(<span class="kw">here</span>(<span class="st">&quot;data&quot;</span>))</span>
+<span id="cb10-2"><a href="index.html#cb10-2"></a><span class="cf">for</span> (data_dir <span class="cf">in</span> <span class="kw">c</span>(<span class="st">&quot;grib&quot;</span>, <span class="st">&quot;netcdf&quot;</span>, <span class="st">&quot;vfld&quot;</span>, <span class="st">&quot;vobs&quot;</span>)) {</span>
+<span id="cb10-3"><a href="index.html#cb10-3"></a>  <span class="kw">file.symlink</span>(<span class="dt">from =</span> <span class="kw">system.file</span>(data_dir, <span class="dt">package =</span> <span class="st">&quot;harpData&quot;</span>), <span class="dt">to =</span> <span class="kw">here</span>(<span class="st">&quot;data&quot;</span>))</span>
+<span id="cb10-4"><a href="index.html#cb10-4"></a>}</span></code></pre></div>
 <p>You are now ready to start the first tutorial!</p>
 </div>
 </div>
@@ -290,12 +298,12 @@ Click on:
 <p>If you use R for other projects that are sensitive to package versions, and thus don’t want to risk updating those packages when you install harp, you can install harp as a project with its own package repository. This is done using the renv package.</p>
 <p>In RStudio this is straightforward - when you create the project, tick the box labeled “Use renv with this project” (for older versions of RStudio this will be “Use Packrat with this project”) before clicking on the final “Create Project” button.</p>
 <p>If you are using R from the terminal, before installing harp create the project directory as described in R <a href="index.html#from-the-terminal">from the terminal</a> and navigate to it using <code>setwd</code>. Then use renv to create the isolated environment:</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="index.html#cb10-1"></a><span class="kw">install.packages</span>(<span class="st">&quot;renv&quot;</span>)</span>
-<span id="cb10-2"><a href="index.html#cb10-2"></a>renv<span class="op">::</span><span class="kw">init</span>()</span>
-<span id="cb10-3"><a href="index.html#cb10-3"></a>renv<span class="op">::</span><span class="kw">install</span>(<span class="st">&quot;harphub/harp&quot;</span>)</span>
-<span id="cb10-4"><a href="index.html#cb10-4"></a>renv<span class="op">::</span><span class="kw">install</span>(<span class="st">&quot;tidyverse&quot;</span>)</span>
-<span id="cb10-5"><a href="index.html#cb10-5"></a>renv<span class="op">::</span><span class="kw">install</span>(<span class="st">&quot;here&quot;</span>)</span>
-<span id="cb10-6"><a href="index.html#cb10-6"></a>renv<span class="op">::</span><span class="kw">snapshot</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="index.html#cb11-1"></a><span class="kw">install.packages</span>(<span class="st">&quot;renv&quot;</span>)</span>
+<span id="cb11-2"><a href="index.html#cb11-2"></a>renv<span class="op">::</span><span class="kw">init</span>()</span>
+<span id="cb11-3"><a href="index.html#cb11-3"></a>renv<span class="op">::</span><span class="kw">install</span>(<span class="st">&quot;harphub/harp&quot;</span>)</span>
+<span id="cb11-4"><a href="index.html#cb11-4"></a>renv<span class="op">::</span><span class="kw">install</span>(<span class="st">&quot;tidyverse&quot;</span>)</span>
+<span id="cb11-5"><a href="index.html#cb11-5"></a>renv<span class="op">::</span><span class="kw">install</span>(<span class="st">&quot;here&quot;</span>)</span>
+<span id="cb11-6"><a href="index.html#cb11-6"></a>renv<span class="op">::</span><span class="kw">snapshot</span>()</span></code></pre></div>
 <p>You will need to do this for every harp based project, but it will ensure that you do not overwrite any version sensitive packages.</p>
 
 </div>

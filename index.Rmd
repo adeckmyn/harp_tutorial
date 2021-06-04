@@ -62,22 +62,37 @@ remotes::install_github(
 where `/path/to/proj` is the full path to your PROJ installation. 
 
 ## Setting up a project
-To follow the tutorial, you will need to download the data. These data are found in the harpData package, which can also be installed from Github:
+To follow the tutorial, you will need to download the data. These data are found in the harpData package, which can also be installed from Github.
 ```{r install_harpData, eval = FALSE}
 remotes::install_github("harphub/harpData")
+```
+
+Note that the harpData package is large (~1 GB) and may take some time to download. R has a timeout of 60 seconds on downloads so you may need to increase this and adjust it back to 60 seconds afterwards by setting `timeout` in `options()` before installing harpData. For example, to increase the timeout to 600 seconds and then install harpData you would do the following:
+```{r install-harpData-with-timeout, eval = FALSE}
+options(timeout = 600)
+remotes::install_github("harphub/harpData")
+options(timeout = 60)
 ```
 
 For the tutorial you should set up a project in clean directory. There are slightly different approaches depending on whether you're using [RStudio] or R [from the terminal]
 
 ### RStudio
 Click on:
+
 |   File > New Project
+
 Select:
+
 |   - New Directory
+
 |   - New Project
+
 Choose a directory name (e.g. harp_tutorial)
+
 Browse to a directory under which your project should reside
+
 Click on:
+
 |     Create Project
 
 ### From the terminal 
@@ -99,6 +114,7 @@ install.packages("tidyverse")
 
 ```{r here, collapse = TRUE}
 library(here)
+set_here()
 ```
 
 Now will create a data directory and link the contents of the harpData package to the data directory. We will do this by making a vector of the directories we want and loop over the vector and create the directories. Don't worry too much about the syntax at this stage. 
